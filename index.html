@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place AI - Shiga / Sign In</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .auth-card { background: #1e293b; padding: 2rem; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .auth-card h2 { text-align: center; margin-bottom: 1.5rem; color: #38bdf8; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .input-group input { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; }
+        .btn { width: 100%; padding: 0.75rem; border: none; border-radius: 6px; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; margin-top: 1rem; transition: 0.3s; }
+        .btn:hover { background: #0284c7; color: #fff; }
+        .google-btn { background: #fff; color: #333; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 0.5rem; }
+        .error-msg { color: #f87171; font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <h2>Place AI</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Imel (Email)</label>
+                <input type="email" id="email" required placeholder="Saka imel ɗinka">
+            </div>
+            <div class="input-group">
+                <label for="password">Kalmar Sirri (Password)</label>
+                <input type="password" id="password" required placeholder="Saka kalmar sirri">
+            </div>
+            <button type="submit" class="btn">Shiga (Login / Sign Up)</button>
+            <button type="button" class="btn google-btn" onclick="handleGoogleLogin()">
+                Continue with Google
+            </button>
+        </form>
+        <p id="errorMsg" class="error-msg"></p>
+    </div>
+
+    <script>
+        const ADMIN_EMAIL = "abubakarsadeeq8533@gmail.com";
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            // Duba ko an dakatar da mai amfani (Suspension Check)
+            const suspendedUsers = JSON.parse(localStorage.getItem('suspended_users') || '[]');
+            if (suspendedUsers.includes(email)) {
+                // Ajiye imel ɗin wanda aka dakatar domin shafin Appeal
+                localStorage.setItem('current_suspended_email', email);
+                window.location.href = 'suspended.html';
+                return;
+            }
+
+            // Ajiye bayanan mai amfani a LocalStorage na yanzu
+            localStorage.setItem('current_user_email', email);
+
+            // Tsarin raba Admin da Customer (Admin Routing)
+            if (email === ADMIN_EMAIL) {
+                // Tabbatar da cewa an tura shi Admin Dashboard
+                window.location.href = 'admin.html';
+            } else {
+                // Tura abokin ciniki zuwa shafin tattaunawa
+                window.location.href = 'chat.html';
+            }
+        });
+
+        function handleGoogleLogin() {
+            // Misalin simulating Google Login (Ana iya haɗa shi da Firebase/Supabase Auth daga baya)
+            const dummyGoogleEmail = prompt("Shigar da imel ɗin Google ɗinka:");
+            if (dummyGoogleEmail) {
+                document.getElementById('email').value = dummyGoogleEmail;
+                
+                const suspendedUsers = JSON.parse(localStorage.getItem('suspended_users') || '[]');
+                if (suspendedUsers.includes(dummyGoogleEmail)) {
+                    localStorage.setItem('current_suspended_email', dummyGoogleEmail);
+                    window.location.href = 'suspended.html';
+                    return;
+                }
+
+                localStorage.setItem('current_user_email', dummyGoogleEmail);
+
+                if (dummyGoogleEmail === ADMIN_EMAIL) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'chat.html';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
