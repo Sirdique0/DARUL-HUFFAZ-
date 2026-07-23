@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ha" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place AI - Chat</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+        }
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-sidebar: #e2e8f0;
+            --text-color: #0f172a;
+            --border-color: #cbd5e1;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; padding: 1rem; }
+        .sidebar-top { display: flex; flex-direction: column; gap: 1rem; height: calc(100% - 120px); }
+        .new-chat-btn { background: var(--accent); color: #fff; border: none; padding: 0.75rem; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
+        .new-chat-btn:hover { background: var(--accent-hover); }
+        
+        .recent-list { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .chat-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.9rem; cursor: pointer; }
+        .chat-item:hover { background: rgba(255,255,255,0.1); }
+        .chat-actions button { background: none; border: none; color: var(--text-color); cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
+
+        .sidebar-bottom { display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; font-size: 0.85rem; }
+        .sidebar-bottom a { color: var(--text-color); text-decoration: none; cursor: pointer; }
+        .sidebar-bottom a:hover { color: var(--accent); }
+
+        /* Main Chat Area */
+        .main-chat { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; position: relative; }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); background: var(--bg-sidebar); }
+        .chat-body { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+        .message { padding: 1rem; border-radius: 8px; max-width: 70%; line-height: 1.5; }
+        .message.ai { background: var(--bg-sidebar); align-self: flex-start; }
+        .message.user { background: var(--accent); color: #fff; align-self: flex-end; }
+
+        /* Input Area */
+        .chat-input-container { padding: 1rem; border-top: 1px solid var(--border-color); background: var(--bg-sidebar); display: flex; gap: 0.5rem; }
+        .chat-input-container input { flex-grow: 1; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-color); }
+        .chat-input-container button { padding: 0.75rem 1.5rem; background: var(--accent); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        /* Settings Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: var(--bg-sidebar); padding: 2rem; border-radius: 8px; width: 400px; display: flex; flex-direction: column; gap: 1rem; }
+        .modal-content select, .modal-content input { padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-color); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-top">
+            <button class="new-chat-btn" onclick="startNewChat()">+ New Chat</button>
+            <div style="font-size: 0.8rem; opacity: 0.7;" id="recent-label">Recent Chats (Max 6)</div>
+            <div class="recent-list" id="recentList">
+                <!-- Nan za a dinga jera tsoffin chats -->
+            </div>
+        </div>
+        <div class="sidebar-bottom">
+            <a onclick="openSettings()" id="settings-link">⚙️ Settings</a>
+            <a onclick="openAbout()" id="about-link">ℹ️ About</a>
+            <a onclick="openContact()" id="contact-link">✉️ Contact Us</a>
+            <a onclick="logout()" style="color: #f87171;" id="logout-link">🚪 Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Chat -->
+    <div class="main-chat">
+        <div class="chat-header">
+            <h3 id="ai-title">Place AI</h3>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span id="notifBell" style="cursor: pointer; position: relative;" onclick="checkNotifications()">🔔<span id="notifBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:red; width:8px; height:8px; border-radius:50%;"></span></span>
+                <span id="userEmailDisplay" style="font-size: 0.9.rem; opacity: 0.8;"></span>
+            </div>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <div class="message ai" id="welcomeMsg">
+                Barka da zuwa! Ni ne **Place AI**, mai taimaka maka a yau. Menene kake son mu tattauna akai?
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" id="userInput" placeholder="Rubuta saƙonka anan...">
+            <button onclick="sendMessage()" id="send-btn">Aika</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h3 id="modal-title">Settings</h3>
+            <label id="lbl-profile">Profile Email:</label>
+            <input type="text" id="modalEmail" disabled>
+            
+            <label id="lbl-theme">Theme Mode:</label>
+            <select id="themeSelect" onchange="switchTheme(this.value)">
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+            </select>
+
+            <label id="lbl-lang">Harshe (Language):</label>
+            <select id="langSelect" onchange="switchLanguage(this.value)">
+                <option value="ha">Hausa</option>
+                <option value="en">English</option>
+            </select>
+
+            <button onclick="closeSettings()" style="background:var(--accent); color:#fff; border:none; padding:0.5rem; border-radius:4px; cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Lura da wanda yayi login
+        const currentUser = localStorage.getItem('current_user_email') || "Baƙo";
+        document.getElementById('userEmailDisplay').innerText = currentUser;
+        document.getElementById('modalEmail').value = currentUser;
+
+        // Tsarin Recent Chats da Pin (Max 6, Pin max 3)
+        let chats = JSON.parse(localStorage.getItem('user_chats') || '[]');
+
+        function renderChats() {
+            const list = document.getElementById('recentList');
+            list.innerHTML = '';
+            chats.forEach((chat, index) => {
+                const div = document.createElement('div');
+                div.className = 'chat-item';
+                div.innerHTML = `
+                    <span onclick="loadChat(${index})" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">
+                        ${chat.pinned ? '📌 ' : ''}${chat.title}
+                    </span>
+                    <div class="chat-actions">
+                        <button onclick="togglePin(${index})">Pin</button>
+                        <button onclick="renameChat(${index})">✏️</button>
+                        <button onclick="deleteChat(${index})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function startNewChat() {
+            if (chats.length >= 6) {
+                // Cire wanda ba a yi pin ba kuma ya fi daɗewa
+                let unpinnedIndex = chats.findIndex(c => !c.pinned);
+                if (unpinnedIndex !== -1) {
+                    chats.splice(unpinnedIndex, 1);
+                } else {
+                    chats.pop(); // Idan duka sunyi pin, cire na ƙarshe
+                }
+            }
+            chats.unshift({ title: "Sabon Taɗi", pinned: false, messages: [] });
+            saveAndRender();
+        }
+
+        function togglePin(index) {
+            const pinnedCount = chats.filter(c => c.pinned).length;
+            if (!chats[index].pinned && pinnedCount >= 3) {
+                alert("Za ka iya yin Pin din mafi yawa mutum 3 ne kawai!");
+                return;
+            }
+            chats[index].pinned = !chats[index].pinned;
+            saveAndRender();
+        }
+
+        function renameChat(index) {
+            const newTitle = prompt("Saka sabon suna:", chats[index].title);
+            if (newTitle) {
+                chats[index].title = newTitle;
+                saveAndRender();
+            }
+        }
+
+        function deleteChat(index) {
+            chats.splice(index, 1);
+            saveAndRender();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('user_chats', JSON.stringify(chats));
+            renderChats();
+        }
+
+        // Aika Saƙo zuwa AI
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatBody = document.getElementById('chatBody');
+            
+            // Saƙon Mai amfani
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user';
+            userDiv.innerText = text;
+            chatBody.appendChild(userDiv);
+            input.value = '';
+
+            // Amsar AI (Simulated response daga Base Instructions)
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai';
+                aiDiv.innerText = "Na ji bayanin ka. Ina nan a matsayin Place AI domin taimaka maka da duk wani tsari ko aiki da kake buƙata!";
+                chatBody.appendChild(aiDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Contact Us link zuwa imel ɗin da aka kayyade
+        function openContact() {
+            window.location.href = "mailto:abubakarsadeeq8433@gmail.com?subject=Tuntuba daga Place AI";
+        }
+
+        function openAbout() {
+            alert("Place AI - Manhajar tattaunawa ce ta zamani wadda A A SIRDIQUE Paint & Design da kuma abokan aikinta suka kafa.");
+        }
+
+        // Settings Modal
+        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+
+        // Theme Switcher
+        function switchTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('app_theme', theme);
+        }
+
+        // Language Switcher (Hausa / English)
+        function switchLanguage(lang) {
+            if (lang === 'en') {
+                document.getElementById('ai-title').innerText = "Place AI";
+                document.getElementById('userInput').placeholder = "Type your message here...";
+                document.getElementById('send-btn').innerText = "Send";
+                document.getElementById('recent-label').innerText = "Recent Chats (Max 6)";
+                document.getElementById('settings-link').innerText = "⚙️ Settings";
+                document.getElementById('about-link').innerText = "ℹ️ About";
+                document.getElementById('contact-link').innerText = "✉️ Contact Us";
+                document.getElementById('logout-link').innerText = "🚪 Logout";
+                document.getElementById('modal-title').innerText = "Settings";
+                document.getElementById('lbl-profile').innerText = "Profile Email:";
+                document.getElementById('lbl-theme').innerText = "Theme Mode:";
+                document.getElementById('lbl-lang').innerText = "Language:";
+            } else {
+                document.getElementById('ai-title').innerText = "Place AI";
+                document.getElementById('userInput').placeholder = "Rubuta saƙonka anan...";
+                document.getElementById('send-btn').innerText = "Aika";
+                document.getElementById('recent-label').innerText = "Recent Chats (Max 6)";
+                document.getElementById('settings-link').innerText = "⚙️ Settings";
+                document.getElementById('about-link').innerText = "ℹ️ About";
+                document.getElementById('contact-link').innerText = "✉️ Contact Us";
+                document.getElementById('logout-link').innerText = "🚪 Logout";
+                document.getElementById('modal-title').innerText = "Saituna";
+                document.getElementById('lbl-profile').innerText = "Imel ɗin mai amfani:";
+                document.getElementById('lbl-theme').innerText = "Yanayin Shafi (Theme):";
+                document.getElementById('lbl-lang').innerText = "Harshe (Language):";
+            }
+            localStorage.setItem('app_lang', lang);
+        }
+
+        function logout() {
+            localStorage.removeItem('current_user_email');
+            window.location.href = 'index.html';
+        }
+
+        function checkNotifications() {
+            const notices = JSON.parse(localStorage.getItem('user_notifications') || '[]');
+            if (notices.length > 0) {
+                alert("Sanarwa daga Admin:\n" + notices.join("\n"));
+            } else {
+                alert("Babu sabuwar sanarwa a yanzu.");
+            }
+        }
+
+        // Load saved state
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChats();
+            const savedTheme = localStorage.getItem('app_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeSelect').value = savedTheme;
+
+            const savedLang = localStorage.getItem('app_lang') || 'ha';
+            document.getElementById('langSelect').value = savedLang;
+            switchLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
