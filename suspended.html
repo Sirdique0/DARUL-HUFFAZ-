@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place AI - Account Suspended</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #f87171; }
+        h2 { color: #f87171; margin-bottom: 1rem; }
+        p { font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8; line-height: 1.4; }
+        textarea { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 1rem; }
+        .btn { width: 100%; padding: 0.75rem; border: none; border-radius: 6px; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Your Account is Suspended</h2>
+        <p>An dakatar da asusunka. Latsa ƙasa domin aika roƙon afuwa (Appeal a review) zuwa ga mai kula da shafin (Admin) don a sake duba shi.</p>
+        
+        <textarea id="appealText" rows="4" placeholder="Rubuta bayanin dalilin da yasa za a duba asusunka..."></textarea>
+        <button class="btn" onclick="submitAppeal()">Aika Roƙo (Submit Appeal)</button>
+        <br><br>
+        <a href="index.html" style="color: #38bdf8; font-size: 0.85rem; text-decoration: none;">Komawa shafin shiga</a>
+    </div>
+
+    <script>
+        function submitAppeal() {
+            const text = document.getElementById('appealText').value.trim();
+            const email = localStorage.getItem('current_suspended_email');
+            
+            if (!text) {
+                alert("Da fatan za a rubuta bayani kafin aikewa.");
+                return;
+            }
+
+            if (email) {
+                let appeals = JSON.parse(localStorage.getItem('suspension_appeals') || '{}');
+                appeals[email] = text;
+                localStorage.setItem('suspension_appeals', JSON.stringify(appeals));
+                alert("An aika roƙonka zuwa ga Admin cikin nasara!");
+                document.getElementById('appealText').value = '';
+            } else {
+                alert("An samu matsala wajen gano asusunka.");
+            }
+        }
+    </script>
+</body>
+</html>
