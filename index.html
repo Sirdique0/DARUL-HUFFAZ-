@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DARUL HUFFAZ ONLINE ACADEMY</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Supabase JS Client -->
+    <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -268,6 +268,7 @@
             min-height: 18px;
             background: rgba(248, 250, 252, 0.9);
             border-radius: 4px;
+            word-break: break-all;
         }
 
         .cert-rules-box { border: 1.5px solid var(--primary); border-radius: 6px; margin-bottom: 6px; background: rgba(255, 255, 255, 0.92); overflow: hidden; }
@@ -298,7 +299,7 @@
             overflow-y: auto;
             left: calc(var(--sidebar-width) * -1);
             top: 0;
-            z-index: 100;
+            z-index: 1500;
             box-shadow: 5px 0 25px rgba(0,0,0,0.15);
             transition: left 0.3s ease;
         }
@@ -437,7 +438,6 @@
     </div>
     <button type="button" onclick="showPage('rulesPage')" style="font-size: 20px; padding: 18px 45px; border-radius: 15px; max-width: 320px; font-weight: 800; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);">Register Now ➔</button>
 
-    <!-- CREATOR TAG -->
     <div class="creator-tag">@Sirdique2026</div>
 </div>
 
@@ -473,7 +473,7 @@
     <form id="regForm">
         <div style="display: flex; justify-content: space-between; align-items: center; background: #fdfbf7; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 20px;">
             <div style="width: 90px; height: 110px; border: 2px dashed var(--accent); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;" id="passportPreviewContainer">
-                <img id="passportPreviewImg" src="hoto.png" alt="hoto.png" style="width: 100%; height: 100%; object-fit: contain; background: #f8fafc;" onerror="this.src='hoto.png';">
+                <img id="passportPreviewImg" src="young.jpg" alt="young.jpg" style="width: 100%; height: 100%; object-fit: contain; background: #f8fafc;" onerror="this.src='young.jpg';">
             </div>
             
             <div style="flex: 1; padding-left: 12px; display: flex; flex-direction: column; justify-content: center;">
@@ -492,9 +492,8 @@
         <div class="form-grid-2">
             <div class="form-group"><label>Shekaru (Age) *</label><input type="number" id="age" required placeholder="Misali: 15"></div>
             <div class="form-group">
-                <label>Phone Number * (Dole ya zama lamba 11)</label>
-                <input type="text" id="phone" required inputmode="numeric" pattern="[0-9]*" maxlength="11" placeholder="08012345678">
-                <small id="phoneErrorMsg" style="color: #ef4444; font-size: 11px; display: none; margin-top: 2px;">Lamba dole ta kai kowa 11 kuma ta zama lamba kawai!</small>
+                <label>Phone Number *</label>
+                <input type="tel" id="phone" required placeholder="08012345678" inputmode="numeric" pattern="[0-9]*" minlength="11" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);">
             </div>
         </div>
 
@@ -513,8 +512,8 @@
         <div class="form-group"><label>Address *</label><input type="text" id="address" required placeholder="Misali: Kano, Nigeria"></div>
         
         <div class="form-group">
-            <label>Tsarin Karatu / Tsari</label>
-            <div class="dare-fixed-box">🌐 ONLINE (Trained & Assigned by Code)</div>
+            <label>Tsarin Karatu / Section</label>
+            <div class="dare-fixed-box">🌐 ONLINE</div>
         </div>
         
         <button type="submit" id="submitRegBtn">Yi Register ➔</button>
@@ -525,7 +524,7 @@
 <!-- 4. CONFIRMATION CODE INPUT PAGE -->
 <div id="codePage" class="page auth-container">
     <h2>Confirmation Code Verification</h2>
-    <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; text-align: center; line-height: 1.5;">Tura kuɗin rajista ga Admin ta WhatsApp domain samun lambar tabbatarwa (Confirmation Code).</p>
+    <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; text-align: center; line-height: 1.5;">Tura kuɗin rajista ga Admin ta WhatsApp domin samun lambar tabbatarwa (Confirmation Code).</p>
     
     <a id="whatsappLinkBtn" href="https://wa.me/2347056845435?text=Assalamu%20Alaikum%20Admin,%20Ina%20son%20samun%20Confirmation%20Code." target="_blank" class="whatsapp-btn">
         💬 Tuntuɓi Admin a WhatsApp (0705 684 5435)
@@ -547,7 +546,7 @@
     <div class="official-certificate-card" id="printableFormCard">
         <div class="cert-outer-border">
             <div class="cert-header">
-                <div class="cert-badge-box" id="formCardBadgeBox"><img src="hoto.png" alt="hoto.png" style="width:100%;height:100%;object-fit:contain;" onerror="this.src='hoto.png';"></div>
+                <div class="cert-badge-box" id="formCardBadgeBox"><img src="young.jpg" alt="young.jpg" style="width:100%;height:100%;object-fit:contain;" onerror="this.src='young.jpg';"></div>
                 <div class="cert-title-area" style="text-align: center;">
                     <h2>DARUL HUFFAZ ONLINE ACADEMY</h2>
                     <div class="arabic-school-title" style="font-size: 12px; margin: 2px 0;">مدرسة دار الحفاظ أونلاين أكاديمي</div>
@@ -567,8 +566,12 @@
             </div>
 
             <div class="cert-grid-row">
-                <div class="cert-field-group"><label>SECTION:</label><div class="cert-field-value" style="color: var(--primary); font-weight: bold;">ONLINE</div></div>
-                <div class="cert-field-group"><label>EMAIL ADDRESS:</label><div class="cert-field-value" id="formCardEmail" style="height: 25px; overflow: hidden; font-size: 10.5px;"></div></div>
+                <div class="cert-field-group" style="grid-column: span 2;"><label>Assigned Class (Aji):</label><div class="cert-field-value" id="formCardAssignedClass" style="font-weight: bold;"></div></div>
+            </div>
+
+            <div class="cert-grid-row">
+                <div class="cert-field-group"><label>Email Address:</label><div class="cert-field-value" id="formCardEmail"></div></div>
+                <div class="cert-field-group"><label>Section / Mode:</label><div class="cert-field-value" style="color: var(--secondary); font-weight: bold;">ONLINE</div></div>
             </div>
 
             <div class="cert-grid-row" style="margin-bottom: 2px;">
@@ -594,7 +597,6 @@
         </div>
     </div>
 
-    <!-- WHATSAPP GROUP JOIN BOX -->
     <div class="group-join-box" style="max-width: 540px; margin: 15px auto 0 auto; position: relative; z-index: 10;">
         <div class="group-join-title">JOIN OUR GROUP NOW</div>
         <a href="https://chat.whatsapp.com/KO8DQRLmCpcGEz5hdtk8ix?s=cl&p=a&ilr=0&amv=0" target="_blank" class="join-group-btn">
@@ -852,7 +854,7 @@
         <div class="official-certificate-card" id="adminPrintableFormCard" style="margin:0 auto; width:100%;">
             <div class="cert-outer-border">
                 <div class="cert-header">
-                    <div class="cert-badge-box" id="adminFormBadgeBox"><img src="hoto.png" alt="hoto.png" style="width:100%;height:100%;object-fit:contain;" onerror="this.src='hoto.png';"></div>
+                    <div class="cert-badge-box" id="adminFormBadgeBox"><img src="young.jpg" alt="young.jpg" style="width:100%;height:100%;object-fit:contain;" onerror="this.src='young.jpg';"></div>
                     <div class="cert-title-area" style="text-align: center;">
                         <h2>DARUL HUFFAZ ONLINE ACADEMY</h2>
                         <div class="arabic-school-title" style="font-size: 12px; margin: 2px 0;">مدرسة دار الحفاظ أونلاين أكاديمي</div>
@@ -869,8 +871,11 @@
                     <div class="cert-field-group"><label>Phone Number:</label><div class="cert-field-value" id="adminFormPhone"></div></div>
                 </div>
                 <div class="cert-grid-row">
-                    <div class="cert-field-group"><label>SECTION:</label><div class="cert-field-value" style="color: var(--primary); font-weight: bold;">ONLINE</div></div>
-                    <div class="cert-field-group"><label>EMAIL ADDRESS:</label><div class="cert-field-value" id="adminFormEmail" style="height: 25px; overflow: hidden; font-size: 10.5px;"></div></div>
+                    <div class="cert-field-group" style="grid-column: span 2;"><label>Assigned Class (Aji):</label><div class="cert-field-value" id="adminFormAssignedClass" style="font-weight: bold;"></div></div>
+                </div>
+                <div class="cert-grid-row">
+                    <div class="cert-field-group"><label>Email Address:</label><div class="cert-field-value" id="adminFormEmail"></div></div>
+                    <div class="cert-field-group"><label>Section / Mode:</label><div class="cert-field-value" style="color: var(--secondary); font-weight: bold;">ONLINE</div></div>
                 </div>
                 <div class="cert-grid-row" style="margin-bottom: 2px;">
                     <div class="cert-field-group" style="margin-bottom: 0; grid-column: span 2;"><label>Address:</label><div class="cert-field-value" id="adminFormAddress" style="height: 25px; overflow: hidden;"></div></div>
@@ -899,41 +904,39 @@
 </div>
 
 <script>
-    // Sanya Supabase credentials dinka anan
-    const SUPABASE_URL = 'https://mxkapydsrfurxktejmma.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_VP6gIJkV_DzWR6mawYBKKQ_BM-X7xhC';
-    
+    // Supabase v2 Credentials
+    const SUPABASE_URL = 'https://cclbscalnlnnwcwnawxe.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_7Pm37F5I3Gz4bINpExyM6g_rXUp4QLE';
     let supabaseClient = null;
-    if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && SUPABASE_URL !== 'KA_SAKA_URL_DIN_KA_ANAN') {
+    
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && window.supabase) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } else {
-        console.warn('Supabase ba a saita shi ba tukuna, yana amfani da LocalStorage backup.');
     }
 
-    if (!localStorage.getItem('admin_user')) localStorage.setItem('admin_user', 'Sirdique');
-    if (!localStorage.getItem('admin_pass')) localStorage.setItem('admin_pass', '9781place');
+    // In-memory Fallback State
+    let memoryDB = {
+        codes: [],
+        students: [],
+        notices: [],
+        monthly_archives: [],
+        admin_user: 'Sirdique',
+        admin_pass: '9781place'
+    };
 
-    let arabicTapCount = 0, arabicTapTimer = null, tempPassportBase64 = '', currentFormFilter = 'ALL', selectedModalUserId = null;
+    let arabicTapCount = 0, arabicTapTimer = null, tempPassportBlob = null, tempPassportPreviewUrl = '', currentFormFilter = 'ALL', selectedModalUserId = null;
     let mediaStream = null, usingFrontCamera = true;
 
-    const phoneInput = document.getElementById('phone');
-    const phoneErrorMsg = document.getElementById('phoneErrorMsg');
-
-    phoneInput.addEventListener('input', function(e) {
-        let cleanVal = this.value.replace(/\D/g, '');
-        if (cleanVal.length > 11) {
-            cleanVal = cleanVal.slice(0, 11);
+    // Helper: Base64/DataURL to Blob
+    function dataURLtoBlob(dataurl) {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
         }
-        this.value = cleanVal;
+        return new Blob([u8arr], {type:mime});
+    }
 
-        if (cleanVal.length > 0 && cleanVal.length < 11) {
-            phoneErrorMsg.style.display = 'block';
-            phoneErrorMsg.innerText = `Lambar waya tana buƙatar ta cika 11 (Akwai ${cleanVal.length}/11)`;
-        } else {
-            phoneErrorMsg.style.display = 'none';
-        }
-    });
-
+    // Gallery Input Handling
     document.getElementById('galleryInput').addEventListener('change', function(e) {
         let file = e.target.files[0];
         if(file) {
@@ -949,8 +952,8 @@
         let img = new Image();
         img.onload = function() {
             let canvas = document.createElement('canvas');
-            let maxWidth = 150;
-            let maxHeight = 180;
+            let maxWidth = 300;
+            let maxHeight = 360;
             let width = img.width;
             let height = img.height;
 
@@ -969,13 +972,17 @@
             canvas.height = height;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            tempPassportBase64 = canvas.toDataURL('image/jpeg', 0.6);
             
-            document.getElementById('passportPreviewImg').src = tempPassportBase64;
+            let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            tempPassportBlob = dataURLtoBlob(compressedDataUrl);
+            tempPassportPreviewUrl = compressedDataUrl;
+            
+            document.getElementById('passportPreviewImg').src = tempPassportPreviewUrl;
         };
         img.src = dataUrl;
     }
 
+    // Source Selection Modal Trigger
     document.getElementById('openSourceSelectBtn').addEventListener('click', function() {
         document.getElementById('sourceSelectModal').style.display = 'flex';
     });
@@ -994,6 +1001,7 @@
         openLiveCamera();
     });
 
+    // Live Camera Functions
     function openLiveCamera() {
         document.getElementById('cameraModal').style.display = 'flex';
         startCameraStream();
@@ -1038,7 +1046,7 @@
         let ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        processAndSetImage(canvas.toDataURL('image/jpeg', 0.6));
+        processAndSetImage(canvas.toDataURL('image/jpeg', 0.8));
 
         if (mediaStream) {
             mediaStream.getTracks().forEach(track => track.stop());
@@ -1100,15 +1108,7 @@
 
     document.getElementById('regForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        let phoneVal = phoneInput.value.trim();
-        if (phoneVal.length !== 11) {
-            alert('Lambar waya dole ta zama lamba 11 takamaimai!');
-            phoneInput.focus();
-            return;
-        }
-
-        if(!tempPassportBase64) { alert('Don Allah ka zabi hoton passport tukuna!'); return; }
+        if(!tempPassportBlob && !tempPassportPreviewUrl) { alert('Don Allah ka zabi hoton passport tukuna!'); return; }
         
         let firstName = document.getElementById('firstName').value || 'Dalibi';
         let whatsappMsg = `Assalamu Alaikum Admin, Sunana ${firstName}. Ina son samun Confirmation Code din shiga makaranta.`;
@@ -1121,14 +1121,14 @@
         return new Date(year, month + 1, 0).getDate();
     }
 
-    function checkAndArchiveRevenue(students) {
+    async function checkAndArchiveRevenue(students) {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let now = new Date();
         let curMonthName = monthNames[now.getMonth()];
         let curYear = now.getFullYear();
         let curMonthKey = `${curMonthName} ${curYear}`;
 
-        let archives = JSON.parse(localStorage.getItem('db_monthly_archives')) || [];
+        let archives = await fetchSupabaseArchives();
         let monthlyMap = {};
 
         students.forEach(s => {
@@ -1151,26 +1151,30 @@
             if(mKey !== curMonthKey) {
                 let exists = archives.find(a => a.monthKey === mKey);
                 if(!exists) {
-                    archives.push({
+                    let newArch = {
                         monthKey: mKey,
                         beginner: monthlyMap[mKey].beginner,
                         intermediate: monthlyMap[mKey].intermediate,
                         advance: monthlyMap[mKey].advance,
                         total: monthlyMap[mKey].total,
                         days: monthlyMap[mKey].daysCount
-                    });
+                    };
+                    if(supabaseClient) {
+                        await supabaseClient.from('monthly_archives').insert([newArch]);
+                    }
+                    memoryDB.monthly_archives.push(newArch);
                 }
             }
         }
-        localStorage.setItem('db_monthly_archives', JSON.stringify(archives));
     }
 
+    // Direct Supabase API Queries (v2)
     async function fetchSupabaseCodes() {
         if(supabaseClient) {
             let { data, error } = await supabaseClient.from('codes').select('*');
             if (!error && data) return data;
         }
-        return JSON.parse(localStorage.getItem('db_codes')) || [];
+        return memoryDB.codes;
     }
 
     async function fetchSupabaseStudents() {
@@ -1178,7 +1182,7 @@
             let { data, error } = await supabaseClient.from('students').select('*');
             if (!error && data) return data;
         }
-        return JSON.parse(localStorage.getItem('db_students')) || [];
+        return memoryDB.students;
     }
 
     async function fetchSupabaseNotices() {
@@ -1186,7 +1190,44 @@
             let { data, error } = await supabaseClient.from('notices').select('*');
             if (!error && data) return data;
         }
-        return JSON.parse(localStorage.getItem('db_notices')) || [];
+        return memoryDB.notices;
+    }
+
+    async function fetchSupabaseArchives() {
+        if(supabaseClient) {
+            let { data, error } = await supabaseClient.from('monthly_archives').select('*');
+            if (!error && data) return data;
+        }
+        return memoryDB.monthly_archives;
+    }
+
+    // Function to upload passport photo directly to Supabase Storage v2
+    async function uploadPassportToSupabase(fileBlob, userId) {
+        if (!supabaseClient || !fileBlob) return tempPassportPreviewUrl;
+        
+        try {
+            const fileName = `passport_${userId}_${Date.now()}.jpg`;
+            const { data, error } = await supabaseClient.storage
+                .from('passports')
+                .upload(fileName, fileBlob, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+
+            if (error) {
+                console.error('Storage upload error:', error);
+                return tempPassportPreviewUrl;
+            }
+
+            const { data: publicUrlData } = supabaseClient.storage
+                .from('passports')
+                .getPublicUrl(fileName);
+
+            return publicUrlData.publicUrl || tempPassportPreviewUrl;
+        } catch (err) {
+            console.error('Upload exception:', err);
+            return tempPassportPreviewUrl;
+        }
     }
 
     document.getElementById('finalizeRegBtn').addEventListener('click', async function() {
@@ -1207,7 +1248,6 @@
         if(supabaseClient) {
             await supabaseClient.from('codes').update({ used: true }).eq('code', foundCode.code);
         }
-        localStorage.setItem('db_codes', JSON.stringify(codesObj));
 
         let students = await fetchSupabaseStudents();
         let codePrefix = detectedClass.charAt(0).toUpperCase();
@@ -1215,6 +1255,9 @@
         let now = new Date();
         let timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         let dateStr = now.toLocaleDateString();
+
+        // Upload photo to Supabase Storage
+        let passportUrl = await uploadPassportToSupabase(tempPassportBlob, userId);
 
         let newStudent = {
             userId: userId,
@@ -1224,10 +1267,10 @@
             email: document.getElementById('email').value || 'N/A',
             gender: document.getElementById('gender').value,
             address: document.getElementById('address').value,
-            phone: phoneInput.value,
+            phone: document.getElementById('phone').value,
             section: detectedClass,
             usedCode: foundCode.code,
-            passport: tempPassportBase64,
+            passport: passportUrl,
             time: timeStr,
             date: dateStr,
             timestamp: now.getTime()
@@ -1236,14 +1279,12 @@
         if(supabaseClient) {
             await supabaseClient.from('students').insert([newStudent]);
         }
+        memoryDB.students.unshift(newStudent);
 
-        students.unshift(newStudent);
-        localStorage.setItem('db_students', JSON.stringify(students));
-
-        checkAndArchiveRevenue(students);
+        await checkAndArchiveRevenue(students);
 
         let newNotice = {
-            id: 'notice_' + Date.now() + '_' + Math.random(),
+            id: 'notice_' + Date.now() + '_' + Math.floor(Math.random()*1000),
             studentId: newStudent.userId,
             section: newStudent.section,
             unread: true
@@ -1252,17 +1293,15 @@
         if(supabaseClient) {
             await supabaseClient.from('notices').insert([newNotice]);
         }
-        
-        let notices = await fetchSupabaseNotices();
-        notices.unshift(newNotice);
-        localStorage.setItem('db_notices', JSON.stringify(notices));
+        memoryDB.notices.unshift(newNotice);
 
         populateCertificateData(newStudent);
         renderNotices();
         
         document.getElementById('regForm').reset();
-        tempPassportBase64 = '';
-        document.getElementById('passportPreviewImg').src = 'hoto.png';
+        tempPassportBlob = null;
+        tempPassportPreviewUrl = '';
+        document.getElementById('passportPreviewImg').src = 'young.jpg';
         document.getElementById('confCodeInput').value = '';
         document.getElementById('agreeCheck').checked = false;
         document.getElementById('rulesNextBtn').style.display = 'none';
@@ -1275,16 +1314,27 @@
         document.getElementById('formCardLastName').innerText = s.lastName;
         document.getElementById('formCardUserId').innerText = s.userId;
         document.getElementById('formCardPhone').innerText = s.phone;
-        document.getElementById('formCardAddress').innerText = s.address;
         document.getElementById('formCardEmail').innerText = s.email || 'N/A';
+        document.getElementById('formCardAddress').innerText = s.address;
         document.getElementById('studentSigLine').innerText = `${s.firstName} ${s.lastName}`;
         document.getElementById('formCardDate1').innerText = s.date;
         document.getElementById('formCardDate2').innerText = s.date;
 
+        let classElem = document.getElementById('formCardAssignedClass');
+        classElem.innerText = s.section;
+
+        if (s.section === 'Beginner') {
+            classElem.style.color = '#d97706';
+        } else if (s.section === 'Intermediate') {
+            classElem.style.color = '#047857';
+        } else if (s.section === 'Advance') {
+            classElem.style.color = '#be185d';
+        }
+
         let pBox = document.getElementById('formCardPassportBox');
         if(s.passport) pBox.innerHTML = `<img src="${s.passport}" alt="Passport">`; else pBox.innerText = 'PHOTO';
 
-        let waText = `Assalamu Alaikum Admin, Ga fom dina na rajista Darul Huffaz:\n\n*Student ID:* ${s.userId}\n*Suna:* ${s.firstName} ${s.lastName}\n*Email:* ${s.email || 'N/A'}`;
+        let waText = `Assalamu Alaikum Admin, Ga fom dina na rajista Darul Huffaz:\n\n*Student ID:* ${s.userId}\n*Suna:* ${s.firstName} ${s.lastName}\n*Email:* ${s.email || 'N/A'}\n*Aji:* ${s.section}`;
         document.getElementById('whatsappSendBtn').href = `https://wa.me/2347056845435?text=${encodeURIComponent(waText)}`;
     }
 
@@ -1317,7 +1367,7 @@
     document.getElementById('verifyLoginBtn').addEventListener('click', function() {
         let u = document.getElementById('adminUser').value.trim();
         let p = document.getElementById('adminPass').value.trim();
-        if(u === localStorage.getItem('admin_user') && p === localStorage.getItem('admin_pass')) {
+        if(u === memoryDB.admin_user && p === memoryDB.admin_pass) {
             document.getElementById('adminWelcomeUser').innerText = `Admin: ${u}`;
             showPage('adminDashboard');
         } else { alert('Username ko Password bai daidai ba!'); }
@@ -1325,7 +1375,7 @@
 
     async function loadDashboardData() {
         let students = await fetchSupabaseStudents();
-        checkAndArchiveRevenue(students);
+        await checkAndArchiveRevenue(students);
 
         let totalRev = students.length * 1500;
         document.getElementById('statTotalStudents').innerText = students.length;
@@ -1341,16 +1391,16 @@
         document.getElementById('badgeIntermediate').innerText = countIntermediate;
         document.getElementById('badgeAdvance').innerText = countAdvance;
 
-        renderMonthlyRevenueTab(students);
-        renderAllStudentsTable();
-        renderClassTables();
-        renderFormsList();
-        renderCodesEngines();
-        renderNotices();
-        renderPromoDemo();
+        await renderMonthlyRevenueTab(students);
+        await renderAllStudentsTable();
+        await renderClassTables();
+        await renderFormsList();
+        await renderCodesEngines();
+        await renderNotices();
+        await renderPromoDemo();
     }
 
-    function renderMonthlyRevenueTab(students) {
+    async function renderMonthlyRevenueTab(students) {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let now = new Date();
         let curMonthName = monthNames[now.getMonth()];
@@ -1373,7 +1423,7 @@
         document.getElementById('curAdvanceRev').innerText = `₦${curRev.Advance.toLocaleString()}`;
         document.getElementById('curAllRev').innerText = `₦${curTotal.toLocaleString()}`;
 
-        let archives = JSON.parse(localStorage.getItem('db_monthly_archives')) || [];
+        let archives = await fetchSupabaseArchives();
         let archiveContainer = document.getElementById('monthlyArchivesListContainer');
 
         archiveContainer.innerHTML = archives.length ? archives.map(a => `
@@ -1442,18 +1492,14 @@
 
     async function markNotice(id) {
         if(supabaseClient) await supabaseClient.from('notices').update({ unread: false }).eq('id', id);
-        let notices = await fetchSupabaseNotices();
-        let item = notices.find(n => n.id === id);
+        let item = memoryDB.notices.find(n => n.id === id);
         if(item) item.unread = false;
-        localStorage.setItem('db_notices', JSON.stringify(notices));
         renderNotices();
     }
 
     async function deleteSingleNotice(id) {
         if(supabaseClient) await supabaseClient.from('notices').delete().eq('id', id);
-        let notices = await fetchSupabaseNotices();
-        notices = notices.filter(n => n.id !== id);
-        localStorage.setItem('db_notices', JSON.stringify(notices));
+        memoryDB.notices = memoryDB.notices.filter(n => n.id !== id);
         renderNotices();
     }
 
@@ -1464,7 +1510,6 @@
             n.unread = false;
             if(supabaseClient) await supabaseClient.from('notices').update({ unread: false }).eq('id', n.id);
         }
-        localStorage.setItem('db_notices', JSON.stringify(notices));
         renderNotices();
     });
 
@@ -1474,7 +1519,7 @@
         for(let n of notices) {
             if(supabaseClient) await supabaseClient.from('notices').delete().eq('id', n.id);
         }
-        localStorage.setItem('db_notices', JSON.stringify([]));
+        memoryDB.notices = [];
         renderNotices();
     });
 
@@ -1540,7 +1585,6 @@
         }
 
         if(supabaseClient) await supabaseClient.from('students').update({ section: s.section }).eq('userId', userId);
-        localStorage.setItem('db_students', JSON.stringify(students));
         loadDashboardData();
     }
 
@@ -1634,9 +1678,7 @@
 
         if(supabaseClient) await supabaseClient.from('students').delete().eq('userId', selectedModalUserId);
         
-        let students = await fetchSupabaseStudents();
-        students = students.filter(s => s.userId !== selectedModalUserId);
-        localStorage.setItem('db_students', JSON.stringify(students));
+        memoryDB.students = memoryDB.students.filter(s => s.userId !== selectedModalUserId);
 
         document.getElementById('studentModal').style.display = 'none';
         selectedModalUserId = null;
@@ -1690,8 +1732,20 @@
         document.getElementById('adminFormLastName').innerText = s.lastName;
         document.getElementById('adminFormUserId').innerText = s.userId;
         document.getElementById('adminFormPhone').innerText = s.phone;
-        document.getElementById('adminFormAddress').innerText = s.address;
         document.getElementById('adminFormEmail').innerText = s.email || 'N/A';
+        document.getElementById('adminFormAddress').innerText = s.address;
+        
+        let classElem = document.getElementById('adminFormAssignedClass');
+        classElem.innerText = s.section;
+
+        if (s.section === 'Beginner') {
+            classElem.style.color = '#d97706';
+        } else if (s.section === 'Intermediate') {
+            classElem.style.color = '#047857';
+        } else if (s.section === 'Advance') {
+            classElem.style.color = '#be185d';
+        }
+
         document.getElementById('adminStudentSigLine').innerText = `${s.firstName} ${s.lastName}`;
         document.getElementById('adminFormDate1').innerText = s.date;
         document.getElementById('adminFormDate2').innerText = s.date;
@@ -1764,10 +1818,8 @@
 
         for(let nc of newGenerated) {
             if(supabaseClient) await supabaseClient.from('codes').insert([nc]);
-            codes.push(nc);
+            memoryDB.codes.push(nc);
         }
-
-        localStorage.setItem('db_codes', JSON.stringify(codes));
 
         renderCodesEngines();
         alert(`An ƙirƙiri sabbin codes 20 na ${sec} successfully!`);
@@ -1780,9 +1832,7 @@
     async function deleteSingleCode(codeStr) {
         if(!confirm(`Goge code: ${codeStr}?`)) return;
         if(supabaseClient) await supabaseClient.from('codes').delete().eq('code', codeStr);
-        let codes = await fetchSupabaseCodes();
-        codes = codes.filter(c => c.code !== codeStr);
-        localStorage.setItem('db_codes', JSON.stringify(codes));
+        memoryDB.codes = memoryDB.codes.filter(c => c.code !== codeStr);
         renderCodesEngines();
     }
 
@@ -1804,8 +1854,7 @@
         for(let td of toDelete) {
             if(supabaseClient) await supabaseClient.from('codes').delete().eq('code', td.code);
         }
-        codes = codes.filter(c => !c.code.toLowerCase().startsWith(prefix));
-        localStorage.setItem('db_codes', JSON.stringify(codes));
+        memoryDB.codes = memoryDB.codes.filter(c => !c.code.toLowerCase().startsWith(prefix));
         renderCodesEngines();
     }
 
@@ -1814,14 +1863,10 @@
         let students = await fetchSupabaseStudents();
         let resArea = document.getElementById('searchDashboardResult');
         if(!q) { resArea.innerHTML = ''; return; }
-        let matches = students.filter(s => s.userId.toUpperCase().includes(q) || `${s.firstName} ${s.lastName}`.toUpperCase().includes(q) || s.phone.includes(q));
-        resArea.innerHTML = matches.length ? `
-            <table>
-                <tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th></tr>
-                ${matches.map(s => `<tr onclick="openStudentModal('${s.userId}')"><td><b>${s.userId}</b></td><td>${s.firstName} ${s.lastName}</td><td>${s.section}</td><td>${s.phone}</td></tr>`).join('')}
-            </table>
-        ` : '<p style="color:#64748b; font-size:13px;">Babu sakamako.</p>';
+        let matches = students.filter(s => s.userId.toUpperCase().includes(q) || `${s.firstName} ${s.lastName}`.toUpperCase().includes(q));
+        resArea.innerHTML = matches.map(s => `<div onclick="openStudentModal('${s.userId}')" style="padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 5px; font-size: 13.5px; cursor: pointer;"><b>${s.userId}</b> - ${s.firstName} ${s.lastName} (${s.section})</div>`).join('');
     });
 </script>
+
 </body>
 </html>
