@@ -457,7 +457,7 @@
 
     <!-- Main Content -->
     <div class="main-content" id="mainArea">
-        <!-- 1. SASHIN SIYAR DA KAYA (Yanzu shine HOMEPAGE) -->
+        <!-- 1. SASHIN SIYAR DA KAYA (HOMEPAGE) -->
         <div id="sashinSiyarwa" class="page-section active">
             <div class="container">
                 <h2>🛒 Siyar da Kaya (Home)</h2>
@@ -761,8 +761,6 @@
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
 
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Don Allah cika duk wuraren da ake bukata!"); return; }
-        let akwaiFile = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === maiSaya.toLowerCase());
-        if (!akwaiFile) { alert(`Babu fayil da aka buɗe da sunan "${maiSaya}" ba! Je sashin File Record ka fara ƙirƙirar fayil.`); return; }
 
         let yauData = new Date();
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
@@ -791,8 +789,6 @@
         let kudi = parseFloat(document.getElementById('kudinBashi').value);
 
         if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Don Allah cika duk wuraren da ake bukata!"); return; }
-        let akwaiFile = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
-        if (!akwaiFile) { alert(`Babu fayil da aka buɗe da sunan "${suna}" ba! Je sashin File Record ka fara ƙirƙirar fayil.`); return; }
 
         let yauData = new Date();
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
