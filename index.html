@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tsarin Siyar da Kaya da Basussuka</title>
+    <title>Tsarin Siyar da Kaya da Basussuka (Supabase & Admin)</title>
+    
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary-color: #6c5ce7;
@@ -15,6 +19,7 @@
             --danger-color: #ff7675;
             --success-color: #00b894;
             --warning-color: #fdcb6e;
+            --admin-color: #d63031;
         }
 
         body {
@@ -25,6 +30,167 @@
             min-height: 100vh;
             overflow-x: hidden;
             color: var(--text-color);
+        }
+
+        /* 🌟 AUTHENTICATION */
+        #sashinAuth {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            background: radial-gradient(circle at top left, #a29bfe, #6c5ce7, #2d3436);
+            background-size: 200% 200%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px 30px 30px;
+            border-radius: 20px;
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-sizing: border-box;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #636e72;
+            margin-bottom: 25px;
+        }
+
+        .auth-card .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .auth-card label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #2d3436;
+            text-transform: uppercase;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            box-sizing: border-box;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .auth-card input:focus {
+            border-color: var(--primary-color);
+            background: #fff;
+            box-shadow: 0 0 12px rgba(108, 92, 231, 0.25);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color), #5b49e0);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.6);
+        }
+
+        .auth-links-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .auth-link-item {
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .auth-link-item:hover { text-decoration: underline; }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #636e72;
+            cursor: pointer;
+        }
+
+        .auth-toggle span {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .powered-by-sirdique {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .powered-by-sirdique span {
+            background: linear-gradient(45deg, #ff7675, #fab1a0, #fdcb6e, #00b894, #00cec9, #6c5ce7, #a29bfe);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: colorShift 6s ease infinite;
+            font-weight: 800;
+        }
+        @keyframes colorShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Sidebar Design */
@@ -45,21 +211,15 @@
             box-shadow: 5px 0px 20px rgba(0,0,0,0.3);
             overflow-y: auto;
         }
-        .sidebar.rufe {
-            transform: translateX(-100%);
-        }
+        .sidebar.rufe { transform: translateX(-100%); }
         .sidebar h2 {
             font-size: 22px;
             text-align: center;
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 12px;
             color: var(--accent-color);
-            letter-spacing: 1px;
         }
-        .menu-list {
-            list-style: none;
-            padding: 0;
-        }
+        .menu-list { list-style: none; padding: 0; }
         .menu-list li {
             padding: 14px 12px;
             margin-bottom: 8px;
@@ -74,7 +234,6 @@
             background-color: var(--primary-color);
             color: white;
             transform: translateX(8px);
-            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4);
         }
         .clock-box {
             background: rgba(0,0,0,0.2);
@@ -86,7 +245,7 @@
             margin-top: 15px;
         }
 
-        /* Top Bar & Live Search Bar */
+        /* Top Bar */
         .top-bar {
             width: 100%;
             padding: 15px 20px 5px 20px;
@@ -108,18 +267,10 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0px 4px 10px rgba(108, 92, 231, 0.4);
-            transition: transform 0.2s, background 0.3s;
             z-index: 999;
             flex-shrink: 0;
         }
-        .menu-btn:hover {
-            background: #5b49e0;
-            transform: scale(1.05);
-        }
-        .search-container {
-            flex-grow: 1;
-            position: relative;
-        }
+        .search-container { flex-grow: 1; position: relative; }
         .search-input {
             width: 100%;
             padding: 10px 15px;
@@ -129,14 +280,8 @@
             background: #ffffff;
             box-sizing: border-box;
             outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(108, 92, 231, 0.2);
         }
 
-        /* Sakamakon Live Search */
         #searchResultsBox {
             display: none;
             width: 100%;
@@ -151,7 +296,6 @@
             position: relative;
         }
 
-        /* Main Content Design */
         .main-content {
             width: 100%;
             padding: 10px 20px 20px 20px;
@@ -168,9 +312,7 @@
             margin-top: 10px;
             animation: fadeIn 0.5s ease-in-out;
         }
-        .page-section.active {
-            display: block;
-        }
+        .page-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
@@ -187,20 +329,9 @@
             box-sizing: border-box;
             border-top: 5px solid var(--primary-color);
         }
-        .container h2, .container h3 {
-            color: #2d3436;
-            margin-top: 0;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            font-size: 14px;
-            color: #4b6584;
-        }
+        .container h2, .container h3 { color: #2d3436; margin-top: 0; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; color: #4b6584; }
         input, textarea, button, select {
             width: 100%;
             padding: 12px;
@@ -208,17 +339,9 @@
             border: 2px solid #dfe6e9;
             border-radius: 8px;
             box-sizing: border-box;
-            transition: border-color 0.3s;
         }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(108, 92, 231, 0.2);
-        }
-        textarea {
-            resize: vertical;
-            height: 80px;
-        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary-color); }
+        textarea { resize: vertical; height: 80px; }
         .btn-primary {
             background-color: var(--success-color);
             color: white;
@@ -226,12 +349,8 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 10px;
-            transition: background 0.3s, transform 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
-        }
-        .btn-primary:hover {
-            background-color: #00a884;
-            transform: translateY(-2px);
+            border-radius: 8px;
+            padding: 12px;
         }
         .btn-voice {
             background-color: var(--primary-color);
@@ -243,13 +362,7 @@
             padding: 10px;
             border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 3px 8px rgba(108, 92, 231, 0.3);
-            transition: background 0.3s;
         }
-        .btn-voice:hover {
-            background-color: #5b49e0;
-        }
-        
         table {
             width: 100%;
             margin-top: 15px;
@@ -257,24 +370,10 @@
             background: white;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        th, td {
-            border: 1px solid #f1f2f6;
-            padding: 10px;
-            text-align: left;
-            font-size: 13px;
-        }
-        th {
-            background-color: #f7f9fa;
-            color: #2d3436;
-        }
-        .clickable-name {
-            color: var(--primary-color);
-            cursor: pointer;
-            text-decoration: underline;
-            font-weight: bold;
-        }
+        th, td { border: 1px solid #f1f2f6; padding: 10px; text-align: left; font-size: 13px; }
+        th { background-color: #f7f9fa; color: #2d3436; }
+        .clickable-name { color: var(--primary-color); cursor: pointer; text-decoration: underline; font-weight: bold; }
         
         .file-card-box {
             background: #f8f9fa;
@@ -283,352 +382,328 @@
             border-radius: 10px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
         }
-        .file-card-box:hover {
-            background: #f1f2f6;
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-        .file-card-title {
-            font-weight: bold;
-            color: var(--primary-color);
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .dots-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-            color: #636e72;
-            cursor: pointer;
-            padding: 0 8px;
-        }
-        .dots-btn:hover {
-            color: var(--primary-color);
-        }
+        .file-card-title { font-weight: bold; color: var(--primary-color); font-size: 16px; }
 
-        /* Calculator Styles */
-        .calc-screen {
-            background: #2d3436;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: right;
-            margin-bottom: 15px;
-        }
-        .calc-expression {
-            font-size: 14px;
-            color: #b2bec3;
-            min-height: 20px;
-            word-break: break-all;
-        }
-        .calc-result {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-top: 5px;
-            word-break: break-all;
-        }
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .calc-btn {
-            padding: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #f1f2f6;
-            color: #2d3436;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .calc-btn:hover {
-            background: #dfe6e9;
-            transform: scale(1.03);
-        }
+        /* Calculator */
+        .calc-screen { background: #2d3436; color: white; padding: 15px; border-radius: 10px; text-align: right; margin-bottom: 15px; }
+        .calc-expression { font-size: 14px; color: #b2bec3; min-height: 20px; }
+        .calc-result { font-size: 28px; font-weight: bold; color: var(--accent-color); margin-top: 5px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .calc-btn { padding: 14px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #f1f2f6; color: #2d3436; }
         .calc-btn.operator { background: var(--primary-color); color: white; }
         .calc-btn.action { background: var(--danger-color); color: white; }
         .calc-btn.equal { background: var(--success-color); color: white; }
         .recent-calc-box {
-            background: #f8f9fa;
-            border: 1px solid #dfe6e9;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
+            background: #f8f9fa; border: 1px solid #dfe6e9; padding: 10px 15px; border-radius: 8px;
+            margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px;
         }
 
-        /* Modal Design */
+        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(3px);
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); justify-content: center; align-items: center;
         }
-        .modal.active-modal {
-            display: flex;
-        }
+        .modal.active-modal { display: flex; }
         .modal-content {
-            background-color: white;
-            padding: 25px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
+            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
-            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes scaleUp {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .close-btn { background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .settings-card-menu {
+            background: #f8f9fa; border: 1px solid #dfe6e9; padding: 15px; border-radius: 10px; margin-bottom: 12px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600;
         }
-        .close-btn {
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
+
+        /* ADMIN DASHBOARD STYLES */
+        #sashinAdminDashboard .container { border-top-color: var(--admin-color); max-width: 650px; }
+        .admin-stat-card {
+            background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 10px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center; font-weight: bold;
         }
-        .close-btn:hover { background: #ff5252; }
     </style>
 </head>
-<body onload="faraAgogo(); lodaBayani(); dubaTsabtaTrash(); lodaRecentCalculations()">
+<body onload="faraAgogo()">
 
-    <!-- Sidebar (Gefen Hagu) -->
-    <div class="sidebar rufe" id="mySidebar">
-        <div>
-            <h2>Sarrafa Kasuwanci</h2>
-            <ul class="menu-list">
-                <li onclick="canzaShafi('sashinSiyarwa')">🛒 Siyar da Kaya (Home)</li>
-                <li onclick="canzaShafi('sashinBashi')">🔍 Rubuta Bashi</li>
-                <li onclick="canzaShafi('sashinSummaryDownload')">📥 Bincike & Download Summary</li>
-                <li onclick="canzaShafi('sashinCalculator')">🧮 Live Calculator</li>
-                <li onclick="canzaShafi('sashinFilesRecord')">📂 File Record (Fayiloli)</li>
-                <li onclick="canzaShafi('sashinTeburSiyarwa')">📦 Record na Siyar da Kaya</li>
-                <li onclick="canzaShafi('sashinTebur')">✅ Fayilolin Basussuka</li>
-                <li onclick="canzaShafi('sashinTarihiBashi')">📅 Tarihin Watanni (Bashi)</li>
-                <li onclick="canzaShafi('sashinTarihiSiyarwa')">📂 Tarihin Watanni (Siyarwa)</li>
-                <li onclick="canzaShafi('sashinTrash')">🗑 Trash (Kayan da aka Share)</li>
-                <li onclick="exportDataToDevice()" style="background: rgba(0, 206, 201, 0.2); border-color: var(--accent-color);">💾 Ajiye Bayanai a Waya (Export)</li>
-                <li onclick="document.getElementById('importFileBox').click()" style="background: rgba(253, 203, 110, 0.2); border-color: var(--warning-color);">📥 Mayar da Bayanai (Import)</li>
-            </ul>
-            <input type="file" id="importFileBox" style="display: none;" accept=".json" onchange="importDataFromDevice(event)">
-        </div>
-        <div class="clock-box">
-            <p id="lokaciYanzu">Ana ɗaukar lokaci...</p>
+    <!-- 1. AUTHENTICATION -->
+    <div id="sashinAuth">
+        <div class="auth-card" id="authCardBox">
+            <h2 id="authTitle">Shiga Account</h2>
+            <p class="auth-subtitle" id="authSubtitle">Barka da zuwa! Da fatan za a shigar da bayanan ka.</p>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="authEmail" placeholder="misali@gmail.com">
+            </div>
+            
+            <div class="form-group" id="passwordGroupContainer">
+                <label>Kalmar Sirri (Password)</label>
+                <input type="password" id="authPassword" placeholder="••••••••">
+            </div>
+            
+            <button class="auth-btn" id="authSubmitBtn" onclick="yiAikiAuth()">Shiga Ciki</button>
+            
+            <div class="auth-links-box" id="authLinksArea">
+                <span class="auth-link-item" onclick="budeForgotModal()">Manta Kalmar Sirri?</span>
+            </div>
+
+            <div class="auth-toggle" id="authToggleText" onclick="canzaTsarinAuth()">
+                Ba ka da account? <span>Yi Sign Up</span>
+            </div>
+
+            <div class="powered-by-sirdique">
+                Powered by <span>Sirdique</span>
+            </div>
         </div>
     </div>
 
-    <!-- Top Bar & Live Search Bar -->
-    <div class="top-bar">
-        <button class="menu-btn" onclick="canzaSidebar(event)">☰</button>
-        <div class="search-container">
-            <input type="text" id="liveSearchInput" class="search-input" placeholder="🔍 Nemo suna ko kwanan wata..." oninput="yiLiveSearch()">
-        </div>
-    </div>
-
-    <!-- Wajen Nuna Sakamakon Live Search -->
-    <div id="searchResultsBox">
-        <div id="searchResultsContent" style="max-height: 250px; overflow-y: auto; font-size: 13px;"></div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content" id="mainArea">
-        <!-- 1. SASHIN SIYAR DA KAYA (HOMEPAGE) -->
-        <div id="sashinSiyarwa" class="page-section active">
-            <div class="container">
-                <h2>🛒 Siyar da Kaya (Home)</h2>
-                <div class="form-group">
-                    <label for="sunanMaiSaya">Sunan Wanda ya Saya:</label>
-                    <input type="text" id="sunanMaiSaya" placeholder="Sunan wanda ya siyo kayan ko yi magana">
-                    <button class="btn-voice" onclick="faraMoriSiyarwa()">🎙 Yi Magana (Murya)</button>
-                </div>
-                <div class="form-group">
-                    <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani:</label>
-                    <textarea id="kayanDaAkaSiyar" placeholder="Misali: Sabulu guda 2..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="kudinSiyarwa">Adadin Kuɗin da Aka Biya (₦):</label>
-                    <input type="number" id="kudinSiyarwa" placeholder="Adadin kuɗin">
-                </div>
-                <button class="btn-primary" onclick="gwadaAjiyeSiyarwa()">Ajiye Siyar da Kaya</button>
+    <!-- MAIN DASHBOARD -->
+    <div id="mainDashboardWrapper" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar rufe" id="mySidebar">
+            <div>
+                <h2>Sarrafa Kasuwanci</h2>
+                <ul class="menu-list" id="sidebarMenuList">
+                    <!-- Za a cika su ta code dangane da ko admin ne ko akasin haka -->
+                </ul>
+            </div>
+            <div class="clock-box">
+                <p id="lokaciYanzu">Ana ɗaukar lokaci...</p>
             </div>
         </div>
 
-        <!-- 2. Sashin Rubuta Bashi -->
-        <div id="sashinBashi" class="page-section">
-            <div class="container">
-                <h2>Rubuta Sabon Bashi</h2>
-                <div class="form-group">
-                    <label for="sunanMutum">Sunan Mai Bashi:</label>
-                    <input type="text" id="sunanMutum" placeholder="Rubuta sunan ko yi magana">
-                    <button class="btn-voice" onclick="faraMoriBashi()">🎙 Yi Magana (Murya)</button>
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="menu-btn" onclick="canzaSidebar(event)">☰</button>
+            <div class="search-container" id="topSearchContainer">
+                <input type="text" id="liveSearchInput" class="search-input" placeholder="🔍 Nemo suna ko kwanan wata..." oninput="yiLiveSearch()">
+            </div>
+        </div>
+
+        <div id="searchResultsBox">
+            <div id="searchResultsContent" style="max-height: 250px; overflow-y: auto; font-size: 13px;"></div>
+        </div>
+
+        <!-- Main Content Sections -->
+        <div class="main-content" id="mainArea">
+            
+            <!-- ADMIN DASHBOARD SECTION -->
+            <div id="sashinAdminDashboard" class="page-section">
+                <div class="container">
+                    <h2 style="color: var(--admin-color);">🛡️ Admin Dashboard (Keɓantacce)</h2>
+                    <p style="font-size: 13px; color: #636e72;">Barka da zuwa mai kula da tsarin (Admin). Ga bayanan gaba ɗaya na tsarin:</p>
+                    
+                    <div class="admin-stat-card">
+                        <span>👥 Jimillar Masu Amfani (Users):</span> <span id="adminTotalUsers" style="color: var(--admin-color); font-size: 18px;">0</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span>🛒 Jimillar Siyarwa a Tsarin:</span> <span id="adminTotalSales" style="color: var(--success-color); font-size: 18px;">₦0</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span>📝 Jimillar Basussuka a Tsarin:</span> <span id="adminTotalDebts" style="color: var(--danger-color); font-size: 18px;">₦0</span>
+                    </div>
+
+                    <h3 style="font-size: 16px; margin-top: 20px;">Lissafin Masu Amfani da Tsarin & Suspending</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Email ɗin User</th><th>Matsayi (Status)</th><th>Ayyuka (Actions)</th></tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya ko Dalili):</label>
-                    <textarea id="abinDaYaAnsa" placeholder="Misali: Shinkafa kulli biyu..."></textarea>
+            </div>
+
+            <!-- 1. SIYAR DA KAYA -->
+            <div id="sashinSiyarwa" class="page-section active">
+                <div class="container">
+                    <h2>🛒 Siyar da Kaya (Home)</h2>
+                    <div class="form-group">
+                        <label for="sunanMaiSaya">Sunan Wanda ya Saya:</label>
+                        <input type="text" id="sunanMaiSaya" placeholder="Sunan wanda ya siyo kayan">
+                        <button class="btn-voice" onclick="faraMoriSiyarwa()">🎙 Yi Magana (Murya)</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani:</label>
+                        <textarea id="kayanDaAkaSiyar" placeholder="Misali: Sabulu guda 2..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="kudinSiyarwa">Adadin Kuɗin da Aka Biya (₦):</label>
+                        <input type="number" id="kudinSiyarwa" placeholder="Adadin kuɗin">
+                    </div>
+                    <button class="btn-primary" onclick="gwadaAjiyeSiyarwa()">Ajiye Siyar da Kaya</button>
                 </div>
-                <div class="form-group">
-                    <label for="kudinBashi">Adadin Kuɗin Bashin (₦):</label>
-                    <input type="number" id="kudinBashi" placeholder="Sa adadin kudin">
+            </div>
+
+            <!-- 2. Rubuta Bashi -->
+            <div id="sashinBashi" class="page-section">
+                <div class="container">
+                    <h2>Rubuta Sabon Bashi</h2>
+                    <div class="form-group">
+                        <label for="sunanMutum">Sunan Mai Bashi:</label>
+                        <input type="text" id="sunanMutum" placeholder="Rubuta sunan">
+                        <button class="btn-voice" onclick="faraMoriBashi()">🎙 Yi Magana (Murya)</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya ko Dalili):</label>
+                        <textarea id="abinDaYaAnsa" placeholder="Misali: Shinkafa..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="kudinBashi">Adadin Kuɗin Bashin (₦):</label>
+                        <input type="number" id="kudinBashi" placeholder="Sa adadin kudin">
+                    </div>
+                    <button class="btn-primary" onclick="gwadaAjiyeBashi()">Ajiye Bashi</button>
                 </div>
-                <button class="btn-primary" onclick="gwadaAjiyeBashi()">Ajiye Bashi</button>
             </div>
-        </div>
 
-        <!-- 3. SASHIN SEARCH & DOWNLOAD SUMMARY -->
-        <div id="sashinSummaryDownload" class="page-section">
-            <div class="container">
-                <h2>📥 Bincike & Download Summary</h2>
-                <p style="font-size: 13px; color: #636e72;">Rubuta sunan mutum don duba cikakken bayani da kuma sauke shi a wayarka.</p>
-                
-                <div class="form-group">
-                    <label for="searchSummaryName">Sunan Abokin Ciniki:</label>
-                    <input type="text" id="searchSummaryName" placeholder="Rubuta sunan daake nema..." oninput="generateCustomerSummary()">
+            <!-- 3. SEARCH & DOWNLOAD SUMMARY -->
+            <div id="sashinSummaryDownload" class="page-section">
+                <div class="container">
+                    <h2>📥 Bincike & Download Summary</h2>
+                    <div class="form-group">
+                        <label for="searchSummaryName">Sunan Abokin Ciniki:</label>
+                        <input type="text" id="searchSummaryName" placeholder="Rubuta sunan..." oninput="generateCustomerSummary()">
+                    </div>
+                    <div id="summaryPreviewBox" style="background: #f9f9f9; border: 1px solid #dfe6e9; padding: 12px; border-radius: 8px; font-size: 13px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+                        <i>Babu sunan da aka rubuta tukuna...</i>
+                    </div>
+                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Summary (TXT)</button>
                 </div>
+            </div>
 
-                <div id="summaryPreviewBox" style="background: #f9f9f9; border: 1px solid #dfe6e9; padding: 12px; border-radius: 8px; font-size: 13px; max-height: 250px; overflow-y: auto; margin-bottom: 15px; line-height: 1.5;">
-                    <i>Babu sunan da aka rubuta tukuna...</i>
+            <!-- 4. LIVE CALCULATOR -->
+            <div id="sashinCalculator" class="page-section">
+                <div class="container">
+                    <h2>🧮 Live Calculator</h2>
+                    <div class="calc-screen">
+                        <div id="calcExpression" class="calc-expression">0</div>
+                        <div id="calcResult" class="calc-result">0</div>
+                    </div>
+                    <div class="calc-grid">
+                        <button class="calc-btn action" onclick="calcClear()">C</button>
+                        <button class="calc-btn action" onclick="calcBackSpace()">⌫</button>
+                        <button class="calc-btn operator" onclick="calcAppend('%')">%</button>
+                        <button class="calc-btn operator" onclick="calcAppend('/')">/</button>
+                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                        <button class="calc-btn operator" onclick="calcAppend('*')">×</button>
+                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                        <button class="calc-btn operator" onclick="calcAppend('-')">-</button>
+                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                        <button class="calc-btn operator" onclick="calcAppend('+')">+</button>
+                        <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                        <button class="calc-btn" onclick="calcAppend('00')">00</button>
+                        <button class="calc-btn" onclick="calcAppend('.')">.</button>
+                        <button class="calc-btn equal" onclick="calcSaveToRecent()">=</button>
+                    </div>
+                    <h3 style="font-size: 16px; margin-top: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🕒 Recent Calculations</span>
+                        <button onclick="clearRecentCalculations()" style="background: var(--danger-color); color: white; border: none; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer;">Goge Dukansu</button>
+                    </h3>
+                    <div id="recentCalcContainer" style="max-height: 250px; overflow-y: auto; margin-top: 10px;"></div>
                 </div>
-
-                <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Summary (TXT)</button>
             </div>
-        </div>
 
-        <!-- 4. SASHIN LIVE CALCULATOR -->
-        <div id="sashinCalculator" class="page-section">
-            <div class="container">
-                <h2>🧮 Live Calculator</h2>
-                <div class="calc-screen">
-                    <div id="calcExpression" class="calc-expression">0</div>
-                    <div id="calcResult" class="calc-result">0</div>
+            <!-- 5. FILE RECORD -->
+            <div id="sashinFilesRecord" class="page-section">
+                <div class="container">
+                    <h2>📂 Fayilolin Abokan Ciniki</h2>
+                    <button class="btn-primary" onclick="budeCreateFileModal()" style="margin-bottom: 15px; background: var(--primary-color);">➕ Ƙirƙiri Sabon Fayil</button>
+                    <div id="jerinSunayenFilesBox" style="margin-top: 15px;"></div>
                 </div>
-                <div class="calc-grid">
-                    <button class="calc-btn action" onclick="calcClear()">C</button>
-                    <button class="calc-btn action" onclick="calcBackSpace()">⌫</button>
-                    <button class="calc-btn operator" onclick="calcAppend('%')">%</button>
-                    <button class="calc-btn operator" onclick="calcAppend('/')">/</button>
-                    <button class="calc-btn" onclick="calcAppend('7')">7</button>
-                    <button class="calc-btn" onclick="calcAppend('8')">8</button>
-                    <button class="calc-btn" onclick="calcAppend('9')">9</button>
-                    <button class="calc-btn operator" onclick="calcAppend('*')">×</button>
-                    <button class="calc-btn" onclick="calcAppend('4')">4</button>
-                    <button class="calc-btn" onclick="calcAppend('5')">5</button>
-                    <button class="calc-btn" onclick="calcAppend('6')">6</button>
-                    <button class="calc-btn operator" onclick="calcAppend('-')">-</button>
-                    <button class="calc-btn" onclick="calcAppend('1')">1</button>
-                    <button class="calc-btn" onclick="calcAppend('2')">2</button>
-                    <button class="calc-btn" onclick="calcAppend('3')">3</button>
-                    <button class="calc-btn operator" onclick="calcAppend('+')">+</button>
-                    <button class="calc-btn" onclick="calcAppend('0')">0</button>
-                    <button class="calc-btn" onclick="calcAppend('00')">00</button>
-                    <button class="calc-btn" onclick="calcAppend('.')">.</button>
-                    <button class="calc-btn equal" onclick="calcSaveToRecent()">=</button>
+            </div>
+
+            <!-- 6. Record na Siyarwa -->
+            <div id="sashinTeburSiyarwa" class="page-section">
+                <div class="container">
+                    <h3>Record na Siyar da Kaya</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Mai Saya</th><th>Jimillar Kuɗi</th></tr>
+                        </thead>
+                        <tbody id="teburinSiyarwa"></tbody>
+                    </table>
                 </div>
-                <h3 style="font-size: 16px; margin-top: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>🕒 Recent Calculations (20 Max)</span>
-                    <button onclick="clearRecentCalculations()" style="background: var(--danger-color); color: white; border: none; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer;">Goge Dukansu</button>
-                </h3>
-                <div id="recentCalcContainer" style="max-height: 250px; overflow-y: auto; margin-top: 10px;"></div>
             </div>
-        </div>
 
-        <!-- 5. SASHIN FILE RECORD -->
-        <div id="sashinFilesRecord" class="page-section">
-            <div class="container">
-                <h2>📂 Fayilolin Abokan Ciniki</h2>
-                <p style="font-size: 13px; color: #636e72;">Danna sunan mutum don dubawa, ko taɓa dige uku (...) don Pin ko Sharewa.</p>
-                <button class="btn-primary" onclick="budeCreateFileModal()" style="margin-bottom: 15px; background: var(--primary-color);">➕ Ƙirƙiri Sabon Fayil</button>
-                <div id="jerinSunayenFilesBox" style="margin-top: 15px;"></div>
+            <!-- 7. Fayilolin Basussuka -->
+            <div id="sashinTebur" class="page-section">
+                <div class="container">
+                    <h3>Fayilolin Basussuka</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Suna</th><th>Jimillar Bashi</th></tr>
+                        </thead>
+                        <tbody id="teburinBashi"></tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- 6. Sashin Record na Kaya da aka Siyar -->
-        <div id="sashinTeburSiyarwa" class="page-section">
-            <div class="container">
-                <h3>Record na Siyar da Kaya</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mai Saya</th>
-                            <th>Jimillar Kuɗi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teburinSiyarwa"></tbody>
-                </table>
+            <!-- 8. SETTINGS -->
+            <div id="sashinSettingsMain" class="page-section">
+                <div class="container">
+                    <h2>⚙️ Saituna (Settings)</h2>
+                    <div class="settings-card-menu" onclick="budeSubSettings('profile')">
+                        <span>👤 Bayanan Profile ɗina</span> <span>➔</span>
+                    </div>
+                    <div class="settings-card-menu" onclick="budeSubSettings('password')">
+                        <span>🔑 Canza Kalmar Sirri</span> <span>➔</span>
+                    </div>
+                    <div class="settings-card-menu" onclick="budeSubSettings('about')">
+                        <span>ℹ️ Game da Mu (About Us)</span> <span>➔</span>
+                    </div>
+                    <div class="settings-card-menu" onclick="fitaDagaAccount()" style="border-color: var(--danger-color); color: #ff7675;">
+                        <span>🚪 Fita Daga Account (Logout)</span> <span>➔</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- 7. Sashin Fayilolin Abokan Ciniki (Bashi) -->
-        <div id="sashinTebur" class="page-section">
-            <div class="container">
-                <h3>Fayilolin Basussuka</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Suna</th>
-                            <th>Jimillar Bashi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teburinBashi"></tbody>
-                </table>
+            <!-- SUB SETTINGS -->
+            <div id="sashinSubProfile" class="page-section">
+                <div class="container">
+                    <button onclick="canzaShafi('sashinSettingsMain')" style="background: #dfe6e9; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;">← Komawa Settings</button>
+                    <h2>👤 Bayanan Profile</h2>
+                    <div class="form-group">
+                        <label>Email Address ɗinka:</label>
+                        <input type="text" id="profileEmailDisplay" readonly style="background: #e9ecef;">
+                    </div>
+                    <div class="form-group">
+                        <label>Account ID:</label>
+                        <input type="text" id="profileIdDisplay" readonly style="background: #e9ecef; font-size: 12px;">
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- 8. Sashin Tarihin Watanni (Bashi) -->
-        <div id="sashinTarihiBashi" class="page-section">
-            <div class="container">
-                <h2>Tarihin Watanni (Bashi)</h2>
-                <div id="jerinWatanniBashiBox"></div>
+            <div id="sashinSubPassword" class="page-section">
+                <div class="container">
+                    <button onclick="canzaShafi('sashinSettingsMain')" style="background: #dfe6e9; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;">← Komawa Settings</button>
+                    <h2>🔑 Canza Kalmar Sirri</h2>
+                    <div class="form-group">
+                        <label>Sabon Kalmar Sirri:</label>
+                        <input type="password" id="newPasswordInput" placeholder="Rubuta sabuwar kalmar sirri...">
+                    </div>
+                    <button class="btn-primary" onclick="yiUpdatePassword()">Sabunta Kalmar Sirri</button>
+                </div>
             </div>
-        </div>
 
-        <!-- 9. Sashin Tarihin Watanni (Siyar da Kaya) -->
-        <div id="sashinTarihiSiyarwa" class="page-section">
-            <div class="container">
-                <h2>Tarihin Watanni (Siyarwa)</h2>
-                <div id="jerinWatanniSiyarwaBox"></div>
+            <div id="sashinSubAbout" class="page-section">
+                <div class="container">
+                    <button onclick="canzaShafi('sashinSettingsMain')" style="background: #dfe6e9; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;">← Komawa Settings</button>
+                    <h2>ℹ️ Game da Mu (About Us)</h2>
+                    <div style="font-size: 14px; line-height: 1.6;">
+                        <p>Tsarin sarrafa kasuwanci da adana basussuka ta Supabase.</p>
+                        <p><b>Powered by:</b> <span style="font-weight: bold; color: var(--primary-color);">Sirdique</span></p>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- 10. Sashin Trash -->
-        <div id="sashinTrash" class="page-section">
-            <div class="container">
-                <h3 style="color: var(--danger-color);">🗑 Trash (Kayan da aka Share)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Suna / Bayani</th>
-                            <th>Nau'i</th>
-                            <th>Aiki</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teburinTrash"></tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -638,17 +713,28 @@
             <h3 style="color: var(--primary-color); margin-top: 0;">➕ Ƙirƙiri Sabon Fayil</h3>
             <div class="form-group">
                 <label>Sunan Abokin Ciniki:</label>
-                <input type="text" id="newFileCustomerName" placeholder="Rubuta sunan abokin ciniki...">
+                <input type="text" id="newFileCustomerName" placeholder="Rubuta sunan...">
             </div>
             <button class="btn-primary" onclick="ajiyeSabonFileTsantsa()">Ƙirƙiri Fayil ɗin</button>
             <button class="close-btn" onclick="rufeCreateFileModal()">Soke</button>
         </div>
     </div>
 
+    <div class="modal" id="forgotModal">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-color); margin-top: 0;">Manta Kalmar Sirri</h3>
+            <div class="form-group">
+                <label>Email Address:</label>
+                <input type="email" id="forgotEmailInput" placeholder="misali@gmail.com">
+            </div>
+            <button class="btn-primary" onclick="aikarDaSakonMantaPassword()">Aika Saƙon</button>
+            <button class="close-btn" onclick="rufeForgotModal()">Soke</button>
+        </div>
+    </div>
+
     <div class="modal" id="customerOptionsModal">
         <div class="modal-content" style="text-align: center;">
             <h3 id="optModalCustomerName" style="color: var(--primary-color); margin-top: 0;"></h3>
-            <p style="font-size: 13px; color: #636e72;">Zaɓi abin da kake son gani a bayanan wannan mutumin:</p>
             <button class="btn-voice" style="background: var(--accent-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Siyarwa')">🛒 Bayanan Siyar da Kaya</button>
             <button class="btn-voice" style="background: var(--warning-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Bashi')">📝 Bayanan Bashi</button>
             <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Dukansu Tare (All)</button>
@@ -656,33 +742,224 @@
         </div>
     </div>
 
-    <div class="modal" id="actionsMenuModal">
-        <div class="modal-content" style="text-align: center;">
-            <h3 id="actionsMenuTitle" style="color: var(--primary-color); margin-top: 0;">Zaɓi Aiki</h3>
-            <button class="btn-voice" id="actionPinBtn" style="background: var(--warning-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="execPinAction()">📌 Pin / Unpin</button>
-            <button class="btn-voice" style="background: var(--danger-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="execDeleteAction()">🗑 Delete (Shafe)</button>
-            <button class="close-btn" onclick="rufeActionsMenuModal()">Cancel</button>
-        </div>
-    </div>
-
     <div class="modal" id="customerFileModal">
         <div class="modal-content">
             <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0;">Cikakken Tarihi</h3>
-            <div id="customerFileContent" style="font-size: 14px; max-height: 250px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px; border: 1px solid #dfe6e9; line-height: 1.6;"></div>
+            <div id="customerFileContent" style="font-size: 14px; max-height: 250px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
             <button class="close-btn" onclick="rufeCustomerFileModal()">Rufe</button>
         </div>
     </div>
 
 <script>
+    // An sanya Supabase URL da Anon Key ɗinka anan ba tare da an canza komai ba
+    const SUPABASE_URL = 'https://grqxewgjoklhiateyvbq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_2VXQlOWBCQlXiaB_MwbJFg_Y-zAxVtj';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const ADMIN_EMAIL = 'abubakarsadeeq8533@gmail.com';
+
+    let isSignUpMode = false;
+    let currentUser = null;
+    let isAdmin = false;
     let jerinFayilolinMutane = [];
     let jerinBasussuka = [];
     let jerinSiyarwa = [];
-    let jerinTrash = [];
     let recentCalculations = [];
     let currentSelectedCustomer = "";
-    let selectedTargetName = "";
-    let selectedTargetType = ""; 
-    let selectedTargetIndex = -1;
+
+    function canzaTsarinAuth() {
+        isSignUpMode = !isSignUpMode;
+        document.getElementById('authTitle').innerText = isSignUpMode ? "Yi Sign Up (Sabo)" : "Shiga Account";
+        document.getElementById('authSubtitle').innerText = isSignUpMode ? "Cika bayanan da ke kasa domin bude sabon account." : "Barka da zuwa! Da fatan za a shigar da bayanan ka.";
+        document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Ƙirƙiri Account ɗin" : "Shiga Ciki";
+        document.getElementById('authLinksArea').style.display = isSignUpMode ? "none" : "flex";
+        document.getElementById('authToggleText').innerHTML = isSignUpMode ? 
+            "Kana da account? <span>Shiga Ciki (Login)</span>" : 
+            "Ba ka da account? <span>Yi Sign Up</span>";
+    }
+
+    async function yiAikiAuth() {
+        let email = document.getElementById('authEmail').value.trim();
+        let password = document.getElementById('authPassword').value.trim();
+        if(!email || !password) { alert("Don Allah cika email da kalmar sirri!"); return; }
+
+        if(isSignUpMode) {
+            let { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if(error) { alert("Kuskure: " + error.message); }
+            else { 
+                // Idan an yi sign up, a ƙirƙiri matsayinsa na active a profiles table
+                if(data.user) {
+                    await supabaseClient.from('profiles').upsert([{ id: data.user.id, email: email, status: 'active' }]);
+                }
+                alert("An buɗe account tare da tura saƙon tabbatarwa. Yanzu za ka iya shiga!"); 
+                canzaTsarinAuth(); 
+            }
+        } else {
+            let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if(error) { alert("Kuskure wajen shiga: " + error.message); }
+            else { 
+                currentUser = data.user;
+                // Bincika ko an yi suspend ɗin user ɗin nan
+                let suspended = await dubaKoAnYiSuspend(currentUser.id);
+                if(suspended) {
+                    alert("⚠️ Ƙishirwa! An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
+                    await supabaseClient.auth.signOut();
+                    currentUser = null;
+                    return;
+                }
+                budeDashboard();
+            }
+        }
+    }
+
+    async function dubaKoAnYiSuspend(userId) {
+        if(userId === '') return false;
+        let { data, error } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
+        if(data && data.status === 'suspended') {
+            return true;
+        }
+        return false;
+    }
+
+    function budeForgotModal() { document.getElementById('forgotModal').classList.add('active-modal'); }
+    function rufeForgotModal() { document.getElementById('forgotModal').classList.remove('active-modal'); }
+
+    async function aikarDaSakonMantaPassword() {
+        let email = document.getElementById('forgotEmailInput').value.trim();
+        if(!email) { alert("Don Allah sa email ɗinka!"); return; }
+        let { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+        if(error) { alert("Kuskure: " + error.message); }
+        else { alert("An tura sakon sauya kalmar sirri zuwa email ɗinka!"); rufeForgotModal(); }
+    }
+
+    async function fitaDagaAccount() {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        isAdmin = false;
+        document.getElementById('mainDashboardWrapper').style.display = 'none';
+        document.getElementById('sashinAuth').style.display = 'flex';
+    }
+
+    async function budeDashboard() {
+        if(!currentUser) return;
+        
+        // Tabbatar ko Admin ne ko mai account na al'ada
+        isAdmin = (currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+
+        // Har ila yau duba status dinsa idan yana cikin app
+        let suspended = await dubaKoAnYiSuspend(currentUser.id);
+        if(suspended && !isAdmin) {
+            alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
+            await fitaDagaAccount();
+            return;
+        }
+
+        document.getElementById('sashinAuth').style.display = 'none';
+        document.getElementById('mainDashboardWrapper').style.display = 'block';
+        
+        document.getElementById('profileEmailDisplay').value = currentUser.email || '';
+        document.getElementById('profileIdDisplay').value = currentUser.id || '';
+
+        gugataTsarinSidebar();
+
+        if(isAdmin) {
+            canzaShafi('sashinAdminDashboard');
+            lodaBayananAdmin();
+        } else {
+            canzaShafi('sashinSiyarwa');
+            lodaBayaniDagaSupabase();
+        }
+    }
+
+    function gugataTsarinSidebar() {
+        let menuList = document.getElementById('sidebarMenuList');
+        let topSearchContainer = document.getElementById('topSearchContainer');
+        
+        if(isAdmin) {
+            topSearchContainer.style.display = 'none';
+            menuList.innerHTML = `
+                <li onclick="canzaShafi('sashinAdminDashboard')">🛡️ Admin Dashboard</li>
+                <li onclick="fitaDagaAccount()" style="background: rgba(255, 118, 117, 0.2); border-color: var(--danger-color); color: #ff7675;">🚪 Fita (Logout)</li>
+            `;
+        } else {
+            topSearchContainer.style.display = 'block';
+            menuList.innerHTML = `
+                <li onclick="canzaShafi('sashinSiyarwa')">🛒 Siyar da Kaya (Home)</li>
+                <li onclick="canzaShafi('sashinBashi')">🔍 Rubuta Bashi</li>
+                <li onclick="canzaShafi('sashinSummaryDownload')">📥 Bincike & Download Summary</li>
+                <li onclick="canzaShafi('sashinCalculator')">🧮 Live Calculator</li>
+                <li onclick="canzaShafi('sashinFilesRecord')">📂 File Record (Fayiloli)</li>
+                <li onclick="canzaShafi('sashinTeburSiyarwa')">📦 Record na Siyar da Kaya</li>
+                <li onclick="canzaShafi('sashinTebur')">✅ Fayilolin Basussuka</li>
+                <li onclick="canzaShafi('sashinSettingsMain')">⚙️ Settings (Saituna)</li>
+                <li onclick="fitaDagaAccount()" style="background: rgba(255, 118, 117, 0.2); border-color: var(--danger-color); color: #ff7675;">🚪 Fita (Logout)</li>
+            `;
+        }
+    }
+
+    supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
+        if(user) {
+            let suspended = await dubaKoAnYiSuspend(user.id);
+            if(!suspended || user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                currentUser = user;
+                budeDashboard();
+            } else {
+                await supabaseClient.auth.signOut();
+            }
+        }
+    });
+
+    async function lodaBayananAdmin() {
+        if(!isAdmin) return;
+        
+        let { data: allFiles } = await supabaseClient.from('customer_files').select('*');
+        let { data: allSiyarwa } = await supabaseClient.from('siyarwa').select('*');
+        let { data: allBasussuka } = await supabaseClient.from('basussuka').select('*');
+        let { data: allProfiles } = await supabaseClient.from('profiles').select('*');
+
+        let totalSalesVal = allSiyarwa ? allSiyarwa.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
+        let totalDebtsVal = allBasussuka ? allBasussuka.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
+        
+        let uniqueUsersCount = allProfiles ? allProfiles.length : (allFiles ? new Set(allFiles.map(f => f.user_id)).size : 0);
+
+        document.getElementById('adminTotalUsers').innerText = uniqueUsersCount;
+        document.getElementById('adminTotalSales').innerText = '₦' + totalSalesVal.toLocaleString();
+        document.getElementById('adminTotalDebts').innerText = '₦' + totalDebtsVal.toLocaleString();
+
+        let usersTable = document.getElementById('adminUsersTableBody');
+        usersTable.innerHTML = "";
+        
+        if(allProfiles && allProfiles.length > 0) {
+            allProfiles.forEach(p => {
+                let statusBadge = p.status === 'suspended' ? 
+                    `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : 
+                    `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
+                
+                let actionBtn = p.status === 'suspended' ? 
+                    `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : 
+                    `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+
+                usersTable.innerHTML += `<tr>
+                    <td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionBtn}</td>
+                </tr>`;
+            });
+        } else {
+            usersTable.innerHTML = `<tr><td colspan="3" style="text-align:center;">Babu bayanan profiles a halin yanzu. (Tabbatar kana da 'profiles' table a Supabase).</td></tr>`;
+        }
+    }
+
+    async function canzaUserStatus(userId, sabonStatus) {
+        let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
+        if(error) {
+            alert("Kuskure wajen canja status: " + error.message);
+        } else {
+            alert(`An yi nasarar sa account ɗin ya zama ${sabonStatus} nan take!`);
+            lodaBayananAdmin();
+        }
+    }
 
     function faraAgogo() {
         setInterval(() => {
@@ -699,22 +976,38 @@
     document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('mySidebar');
         const menuBtn = document.querySelector('.menu-btn');
-        if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+        if (sidebar && !sidebar.contains(event.target) && menuBtn && !menuBtn.contains(event.target)) {
             sidebar.classList.add('rufe');
         }
     });
 
     function canzaShafi(shafiId) {
+        if(isAdmin && shafiId !== 'sashinAdminDashboard') {
+            alert("Kai Admin ne! Ba za ka iya shiga wannan sashin ba.");
+            return;
+        }
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         const zabiShafi = document.getElementById(shafiId);
         if (zabiShafi) {
             zabiShafi.classList.add('active');
-            if(shafiId === 'sashinTarihiBashi') ginaWatanniBox('Bashi');
-            else if(shafiId === 'sashinTarihiSiyarwa') ginaWatanniBox('Siyarwa');
-            else if(shafiId === 'sashinTrash') nunaTeburTrash();
-            else if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
+            if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
         }
-        document.getElementById('mySidebar').classList.add('rufe');
+        let sb = document.getElementById('mySidebar');
+        if(sb) sb.classList.add('rufe');
+    }
+
+    function budeSubSettings(type) {
+        if(type === 'profile') canzaShafi('sashinSubProfile');
+        else if(type === 'password') canzaShafi('sashinSubPassword');
+        else if(type === 'about') canzaShafi('sashinSubAbout');
+    }
+
+    async function yiUpdatePassword() {
+        let sabonPass = document.getElementById('newPasswordInput').value.trim();
+        if(!sabonPass) { alert("Don Allah rubuta sabuwar kalmar sirri!"); return; }
+        let { error } = await supabaseClient.auth.updateUser({ password: sabonPass });
+        if(error) { alert("Kuskure: " + error.message); }
+        else { alert("An yi nasarar sauya kalmar sirri!"); document.getElementById('newPasswordInput').value = ""; canzaShafi('sashinSettingsMain'); }
     }
 
     function faraMoriSiyarwa() {
@@ -723,9 +1016,7 @@
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
-        recognition.onresult = function(event) {
-            document.getElementById('sunanMaiSaya').value = event.results[0][0].transcript;
-        };
+        recognition.onresult = function(event) { document.getElementById('sunanMaiSaya').value = event.results[0][0].transcript; };
     }
 
     function faraMoriBashi() {
@@ -734,80 +1025,92 @@
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
-        recognition.onresult = function(event) {
-            document.getElementById('sunanMutum').value = event.results[0][0].transcript;
-        };
+        recognition.onresult = function(event) { document.getElementById('sunanMutum').value = event.results[0][0].transcript; };
     }
 
     function budeCreateFileModal() { document.getElementById('createFileModal').classList.add('active-modal'); }
     function rufeCreateFileModal() { document.getElementById('createFileModal').classList.remove('active-modal'); }
 
-    function ajiyeSabonFileTsantsa() {
+    async function lodaBayaniDagaSupabase() {
+        if(!currentUser || isAdmin) return;
+        
+        // Duba status din user kafin loda komai
+        let suspended = await dubaKoAnYiSuspend(currentUser.id);
+        if(suspended) {
+            alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
+            await fitaDagaAccount();
+            return;
+        }
+
+        let { data: files } = await supabaseClient.from('customer_files').select('*').eq('user_id', currentUser.id);
+        if(files) jerinFayilolinMutane = files.map(f => ({ id: f.id, suna: f.suna }));
+
+        let { data: basussuka } = await supabaseClient.from('basussuka').select('*').eq('user_id', currentUser.id);
+        if(basussuka) jerinBasussuka = basussuka.map(b => ({ id: b.id, suna: b.suna, kudi: b.kudi, history: b.history || [] }));
+
+        let { data: siyarwa } = await supabaseClient.from('siyarwa').select('*').eq('user_id', currentUser.id);
+        if(siyarwa) jerinSiyarwa = siyarwa.map(s => ({ id: s.id, maiSaya: s.mai_saya, kudi: s.kudi, history: s.history || [] }));
+
+        nunaTebur();
+        nunaTeburSiyarwa();
+    }
+
+    async function ajiyeSabonFileTsantsa() {
         let suna = document.getElementById('newFileCustomerName').value.trim();
         if (suna === "") { alert("Don Allah rubuta sunan abokin ciniki!"); return; }
-        let akwaiShi = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
-        if (akwaiShi) { alert("Wannan fayil ɗin yana wanzuwa a cikin tsarin!"); return; }
-        jerinFayilolinMutane.push({ suna: suna, pinned: false });
-        localStorage.setItem('jerinFayilolinMutane', JSON.stringify(jerinFayilolinMutane));
+        let { error } = await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
+        if(error) { alert("Kuskure: " + error.message); return; }
         document.getElementById('newFileCustomerName').value = "";
         rufeCreateFileModal();
-        alert("An ƙirƙiri fayil ɗin " + suna + " da nasara!");
+        await lodaBayaniDagaSupabase();
         nunaJerinSunayenFiles();
     }
 
-    function gwadaAjiyeSiyarwa() {
+    async function gwadaAjiyeSiyarwa() {
         let maiSaya = document.getElementById('sunanMaiSaya').value.trim();
         let kaya = document.getElementById('kayanDaAkaSiyar').value.trim();
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
+        if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Don Allah cika duk wuraren da ake bukata!"); return; }
-
-        let yauData = new Date();
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString() };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: yauData.toLocaleString(), rana: yauData.toLocaleDateString(), wata: yauData.toLocaleString('en-US', { month: 'long', year: 'numeric' }) };
 
         if (maiSayaDawn) {
-            maiSayaDawn.kudi += kudi;
-            if (!maiSayaDawn.history) maiSayaDawn.history = [];
-            maiSayaDawn.history.push(detailObj);
+            let sabonJimla = maiSayaDawn.kudi + kudi;
+            let sabonHistory = [...(maiSayaDawn.history || []), detailObj];
+            await supabaseClient.from('siyarwa').update({ kudi: sabonJimla, history: sabonHistory }).eq('id', maiSayaDawn.id);
         } else {
-            jerinSiyarwa.push({ maiSaya: maiSaya, kudi: kudi, pinned: false, history: [detailObj] });
+            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: maiSaya, kudi: kudi, history: [detailObj] }]);
         }
 
-        localStorage.setItem('bayananSiyarwa', JSON.stringify(jerinSiyarwa));
         document.getElementById('sunanMaiSaya').value = "";
         document.getElementById('kayanDaAkaSiyar').value = "";
         document.getElementById('kudinSiyarwa').value = "";
-        alert("An adana siyarwa ta " + maiSaya + " da nasara!");
-        nunaTeburSiyarwa();
+        await lodaBayaniDagaSupabase();
         canzaShafi('sashinTeburSiyarwa');
     }
 
-    function gwadaAjiyeBashi() {
+    async function gwadaAjiyeBashi() {
         let suna = document.getElementById('sunanMutum').value.trim();
         let bayaninKaya = document.getElementById('abinDaYaAnsa').value.trim();
         let kudi = parseFloat(document.getElementById('kudinBashi').value);
+        if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Don Allah cika duk wuraren da ake bukata!"); return; }
-
-        let yauData = new Date();
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: new Date().toLocaleString() };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: yauData.toLocaleString(), rana: yauData.toLocaleDateString(), wata: yauData.toLocaleString('en-US', { month: 'long', year: 'numeric' }) };
 
         if (mutumDawn) {
-            mutumDawn.kudi += kudi;
-            if (!mutumDawn.history) mutumDawn.history = [];
-            mutumDawn.history.push(detailObj);
+            let sabonJimla = mutumDawn.kudi + kudi;
+            let sabonHistory = [...(mutumDawn.history || []), detailObj];
+            await supabaseClient.from('basussuka').update({ kudi: sabonJimla, history: sabonHistory }).eq('id', mutumDawn.id);
         } else {
-            jerinBasussuka.push({ suna: suna, kudi: kudi, pinned: false, history: [detailObj] });
+            await supabaseClient.from('basussuka').insert([{ user_id: currentUser.id, suna: suna, kudi: kudi, history: [detailObj] }]);
         }
 
-        localStorage.setItem('bayananBasussuka', JSON.stringify(jerinBasussuka));
         document.getElementById('sunanMutum').value = "";
         document.getElementById('abinDaYaAnsa').value = "";
         document.getElementById('kudinBashi').value = "";
-        alert("An adana bashin " + suna + " da nasara!");
-        nunaTebur();
+        await lodaBayaniDagaSupabase();
         canzaShafi('sashinTebur');
     }
 
@@ -815,49 +1118,21 @@
         let keyword = document.getElementById('searchSummaryName').value.trim().toLowerCase();
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
-
-        if (keyword === "") {
-            previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>";
-            downloadBtn.style.display = "none";
-            return;
-        }
+        if (keyword === "") { previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; downloadBtn.style.display = "none"; return; }
 
         let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
+        if (!bashiRecord && !siyarwaRecord) { previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; downloadBtn.style.display = "none"; return; }
 
-        if (!bashiRecord && !siyarwaRecord) {
-            previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu mai suna "${keyword}".</span>`;
-            downloadBtn.style.display = "none";
-            return;
-        }
-
-        let summaryText = `===== SUMMARY REPORT =====\n`;
-        let htmlText = ``;
-
+        let summaryText = `===== SUMMARY =====\n`, htmlText = ``;
         if (siyarwaRecord) {
-            summaryText += `SUNAN MAI SAYA: ${siyarwaRecord.maiSaya}\n`;
-            summaryText += `JIMILLAR SIYARWA: ₦${siyarwaRecord.kudi.toLocaleString()}\n\nTARIHIN SIYARWA:\n`;
-            htmlText += `<b>Mai Saya:</b> ${siyarwaRecord.maiSaya}<br><b>Jimillar Siyarwa:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br><br><b>Tarihin Siyarwa:</b><br>`;
-            if (siyarwaRecord.history) {
-                siyarwaRecord.history.forEach((h, i) => {
-                    summaryText += `${i+1}. Kaya: ${h.kaya} | Kuɗi: ₦${h.kudi} | Rana: ${h.lokaci}\n`;
-                    htmlText += `• ${h.kaya} (₦${h.kudi.toLocaleString()}) - <i>${h.lokaci}</i><br>`;
-                });
-            }
+            summaryText += `MAI SAYA: ${siyarwaRecord.maiSaya}\nJIla: ₦${siyarwaRecord.kudi.toLocaleString()}\n`;
+            htmlText += `<b>Mai Saya:</b> ${siyarwaRecord.maiSaya}<br><b>Jimla:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br>`;
         }
-
         if (bashiRecord) {
-            summaryText += `\nSUNAN MAI BASHI: ${bashiRecord.suna}\n`;
-            summaryText += `JIMILLAR BASHI: ₦${bashiRecord.kudi.toLocaleString()}\n\nTARIHIN BASHI:\n`;
-            htmlText += `<hr style="border:0; border-top:1px dashed #ccc; margin:8px 0;"><b>Bayanan Bashi:</b><br>`;
-            if (bashiRecord.history) {
-                bashiRecord.history.forEach((h, i) => {
-                    summaryText += `${i+1}. Kaya: ${h.kaya} | Kuɗi: ₦${h.kudi} | Rana: ${h.lokaci}\n`;
-                    htmlText += `• ${h.kaya} (₦${h.kudi.toLocaleString()}) - <i>${h.lokaci}</i><br>`;
-                });
-            }
+            summaryText += `MAI BASHI: ${bashiRecord.suna}\nBashi: ₦${bashiRecord.kudi.toLocaleString()}\n`;
+            htmlText += `<hr><b>Bashi:</b> ${bashiRecord.suna} (₦${bashiRecord.kudi.toLocaleString()})<br>`;
         }
-
         previewBox.innerHTML = htmlText;
         downloadBtn.style.display = "block";
         window.currentGeneratedSummaryText = summaryText;
@@ -867,34 +1142,8 @@
         if (!window.currentGeneratedSummaryText) return;
         let blob = new Blob([window.currentGeneratedSummaryText], { type: 'text/plain;charset=utf-8' });
         let url = URL.createObjectURL(blob);
-        let downloadAnchor = document.createElement('a');
-        downloadAnchor.href = url;
-        downloadAnchor.download = `Summary_${document.getElementById('searchSummaryName').value.trim()}_${new Date().toISOString().slice(0,10)}.txt`;
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        URL.revokeObjectURL(url);
-    }
-
-    function lodaBayani() {
-        if (localStorage.getItem('jerinFayilolinMutane')) {
-            let saved = JSON.parse(localStorage.getItem('jerinFayilolinMutane'));
-            jerinFayilolinMutane = saved.map(item => typeof item === 'string' ? { suna: item, pinned: false } : item);
-        }
-        if (localStorage.getItem('bayananBasussuka')) jerinBasussuka = JSON.parse(localStorage.getItem('bayananBasussuka'));
-        if (localStorage.getItem('bayananSiyarwa')) jerinSiyarwa = JSON.parse(localStorage.getItem('bayananSiyarwa'));
-        if (localStorage.getItem('bayananTrash')) jerinTrash = JSON.parse(localStorage.getItem('bayananTrash'));
-        nunaTebur();
-        nunaTeburSiyarwa();
-    }
-
-    function dubaTsabtaTrash() {
-        let adanaTrash = localStorage.getItem('bayananTrash');
-        if (!adanaTrash) return;
-        let trashList = JSON.parse(adanaTrash);
-        let yanzu = new Date().getTime();
-        jerinTrash = trashList.filter(item => (yanzu - (item.lokacinSharewaMs || yanzu)) < (2 * 30 * 24 * 60 * 60 * 1000));
-        localStorage.setItem('bayananTrash', JSON.stringify(jerinTrash));
+        let a = document.createElement('a'); a.href = url; a.download = `Summary.txt`;
+        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
     let calcExpressionStr = "";
@@ -905,23 +1154,15 @@
         document.getElementById('calcExpression').innerText = calcExpressionStr === "" ? "0" : calcExpressionStr;
         if (calcExpressionStr === "") { document.getElementById('calcResult').innerText = "0"; return; }
         try {
-            let sanitized = calcExpressionStr.replace(/[^0-9+\-*/().%]/g, '');
-            let result = eval(sanitized);
-            document.getElementById('calcResult').innerText = (result !== undefined && !isNaN(result)) ? Number(result).toLocaleString() : "—";
+            let res = eval(calcExpressionStr.replace(/[^0-9+\-*/().%]/g, ''));
+            document.getElementById('calcResult').innerText = (res !== undefined && !isNaN(res)) ? Number(res).toLocaleString() : "—";
         } catch (e) { document.getElementById('calcResult').innerText = "—"; }
-    }
-    function lodaRecentCalculations() {
-        let saved = localStorage.getItem('recentCalculations');
-        if (saved) recentCalculations = JSON.parse(saved);
-        nunaRecentCalculationsUI();
     }
     function calcSaveToRecent() {
         if (calcExpressionStr === "") return;
         let resText = document.getElementById('calcResult').innerText;
         if (resText === "—") return;
         recentCalculations.unshift({ expression: calcExpressionStr, result: resText, time: new Date().toLocaleTimeString() });
-        if (recentCalculations.length > 20) recentCalculations.pop();
-        localStorage.setItem('recentCalculations', JSON.stringify(recentCalculations));
         nunaRecentCalculationsUI();
         calcExpressionStr = resText.replace(/,/g, '');
         updateCalculatorDisplay();
@@ -929,40 +1170,25 @@
     function nunaRecentCalculationsUI() {
         let container = document.getElementById('recentCalcContainer');
         container.innerHTML = "";
-        if (recentCalculations.length === 0) { container.innerHTML = "<p style='text-align:center; color:#636e72; font-size:13px;'>Babu wani lissafi a baya.</p>"; return; }
-        recentCalculations.forEach((item, idx) => {
-            container.innerHTML += `<div class="recent-calc-box"><div><span style="color:#636e72; font-size:12px;">${item.time}</span><br><b>${item.expression}</b> = <span style="color:var(--success-color); font-weight:bold;">₦${item.result}</span></div><button onclick="calcExpressionStr='${item.expression}'; updateCalculatorDisplay();" style="background:var(--primary-color); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">Sake Amfani</button></div>`;
+        if (recentCalculations.length === 0) { container.innerHTML = "<p style='text-align:center; color:#636e72;'>Babu lissafi.</p>"; return; }
+        recentCalculations.forEach((item) => {
+            container.innerHTML += `<div class="recent-calc-box"><div><span style="font-size:12px;">${item.time}</span><br><b>${item.expression}</b> = <span style="color:var(--success-color);">₦${item.result}</span></div><button onclick="calcExpressionStr='${item.expression}'; updateCalculatorDisplay();" style="background:var(--primary-color); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Sake Amfani</button></div>`;
         });
     }
-    function clearRecentCalculations() {
-        if (confirm("Kana son goge duk tarihin lissafin baya?")) {
-            recentCalculations = [];
-            localStorage.removeItem('recentCalculations');
-            nunaRecentCalculationsUI();
-        }
-    }
+    function clearRecentCalculations() { recentCalculations = []; nunaRecentCalculationsUI(); }
 
     function nunaJerinSunayenFiles() {
         let container = document.getElementById('jerinSunayenFilesBox');
         container.innerHTML = "";
-        if (jerinFayilolinMutane.length === 0) { container.innerHTML = "<p style='text-align:center; color:#636e72;'>Babu wani fayil da aka ƙirƙira tukuna.</p>"; return; }
-        jerinFayilolinMutane.forEach((item, idx) => {
+        if (jerinFayilolinMutane.length === 0) { container.innerHTML = "<p style='text-align:center; color:#636e72;'>Babu fayil.</p>"; return; }
+        jerinFayilolinMutane.forEach((item) => {
             let card = document.createElement('div');
             card.className = 'file-card-box';
-            card.innerHTML = `<div class="file-card-title"><span>📁 ${item.suna} ${item.pinned ? '📌' : ''}</span><button class="dots-btn" onclick="event.stopPropagation(); buɗeActionsMenu('${item.suna}', 'fayil', ${idx})">...</button></div>`;
+            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div>`;
             card.onclick = () => budeCustomerOptions(item.suna);
             container.appendChild(card);
         });
     }
-
-    function buɗeActionsMenu(name, type, index) {
-        selectedTargetName = name; selectedTargetType = type; selectedTargetIndex = index;
-        document.getElementById('actionsMenuTitle').innerText = `Zaɓi Aiki: ${name}`;
-        document.getElementById('actionsMenuModal').classList.add('active-modal');
-    }
-    function rufeActionsMenuModal() { document.getElementById('actionsMenuModal').classList.remove('active-modal'); }
-    function execPinAction() { rufeActionsMenuModal(); }
-    function execDeleteAction() { rufeActionsMenuModal(); }
 
     function budeCustomerOptions(suna) {
         currentSelectedCustomer = suna;
@@ -977,14 +1203,9 @@
         let bashiData = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
         let siyarwaData = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
         document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
-        let contentHtml = "";
-        if (type === 'Siyarwa') {
-            contentHtml = siyarwaData ? `<b>Jimillar Siyarwa:</b> ₦${siyarwaData.kudi.toLocaleString()}<br>` : "<p>Babu siyarwa.</p>";
-        } else if (type === 'Bashi') {
-            contentHtml = bashiData ? `<b>Jimillar Bashi:</b> ₦${bashiData.kudi.toLocaleString()}<br>` : "<p>Babu bashi.</p>";
-        } else if (type === 'All') {
-            contentHtml = `<b>Siyarwa:</b> ${siyarwaData ? '₦'+siyarwaData.kudi.toLocaleString() : '₦0'}<br><b>Bashi:</b> ${bashiData ? '₦'+bashiData.kudi.toLocaleString() : '₦0'}`;
-        }
+        let contentHtml = type === 'Siyarwa' ? (siyarwaData ? `Jimillar Siyarwa: ₦${siyarwaData.kudi.toLocaleString()}` : 'Babu') : 
+                          type === 'Bashi' ? (bashiData ? `Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}` : 'Babu') : 
+                          `Siyarwa: ${siyarwaData ? '₦'+siyarwaData.kudi.toLocaleString() : '₦0'}<br>Bashi: ${bashiData ? '₦'+bashiData.kudi.toLocaleString() : '₦0'}`;
         document.getElementById('customerFileContent').innerHTML = contentHtml;
         document.getElementById('customerFileModal').classList.add('active-modal');
     }
@@ -993,7 +1214,7 @@
     function nunaTebur() {
         const tebur = document.getElementById('teburinBashi');
         tebur.innerHTML = "";
-        jerinBasussuka.forEach((mutum, index) => {
+        jerinBasussuka.forEach((mutum) => {
             tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCustomerOptions('${mutum.suna}')">${mutum.suna}</span></td><td>₦${mutum.kudi.toLocaleString()}</td></tr>`;
         });
     }
@@ -1001,17 +1222,11 @@
     function nunaTeburSiyarwa() {
         const tebur = document.getElementById('teburinSiyarwa');
         tebur.innerHTML = "";
-        jerinSiyarwa.forEach((item, index) => {
+        jerinSiyarwa.forEach((item) => {
             tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCustomerOptions('${item.maiSaya}')">${item.maiSaya}</span></td><td>₦${item.kudi.toLocaleString()}</td></tr>`;
         });
     }
 
-    function nunaTeburTrash() {
-        const tebur = document.getElementById('teburinTrash');
-        tebur.innerHTML = jerinTrash.length === 0 ? `<tr><td colspan="3" style="text-align:center; color:#636e72;">Trash babu komai.</td></tr>` : "";
-    }
-
-    function ginaWatanniBox(irin) {}
     function yiLiveSearch() {
         let kw = document.getElementById('liveSearchInput').value.toLowerCase().trim();
         let box = document.getElementById('searchResultsBox'), content = document.getElementById('searchResultsContent');
@@ -1021,34 +1236,6 @@
         jerinBasussuka.forEach(b => { if(b.suna.toLowerCase().includes(kw)) res.push(`<b>${b.suna}</b> (Bashi: ₦${b.kudi.toLocaleString()})`); });
         content.innerHTML = res.length > 0 ? res.join('<br><hr>') : "<p>Babu sakamako.</p>";
         box.style.display = "block";
-    }
-
-    function exportDataToDevice() {
-        let allData = { jerinFayilolinMutane, bayananBasussuka: jerinBasussuka, bayananSiyarwa: jerinSiyarwa, bayananTrash: jerinTrash, recentCalculations };
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
-        let downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `Sirdique_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importDataFromDevice(event) {
-        let file = event.target.files[0];
-        if (!file) return;
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                let parsedData = JSON.parse(e.target.result);
-                localStorage.setItem('jerinFayilolinMutane', JSON.stringify(parsedData.jerinFayilolinMutane));
-                localStorage.setItem('bayananSiyarwa', JSON.stringify(parsedData.bayananSiyarwa));
-                localStorage.setItem('bayananBasussuka', JSON.stringify(parsedData.bayananBasussuka));
-                alert("An dawo da bayanan da nasara!");
-                location.reload();
-            } catch (err) { alert("An samu kuskure."); }
-        };
-        reader.readAsText(file);
     }
 </script>
 </body>
