@@ -529,8 +529,8 @@
                     <h2 style="color: var(--admin-color);">🛡️ Admin Dashboard (Keɓantacce)</h2>
                     <p style="font-size: 13px; color: #636e72;">Barka da zuwa mai kula da tsarin (Admin). Ga bayanan gaba ɗaya na tsarin:</p>
                     
-                    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-                        <button onclick="canzaZuwaNormalMode()" style="background: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">💻 Shiga Normal User View</button>
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn-primary" onclick="canzaZuwaNormalUserMode()" style="background: var(--primary-color); margin-top: 0;">👤 Shiga Matsayin Normal User</button>
                     </div>
 
                     <div class="admin-stat-card">
@@ -799,7 +799,7 @@
     let isSignUpMode = false;
     let currentUser = null;
     let isAdmin = false;
-    let isViewingAsNormal = false;
+    let isViewingAsAdmin = true; // Yana sa admin ya iya canza view tsakanin Admin dash da User mode
     let jerinFayilolinMutane = [];
     let jerinBasussuka = [];
     let jerinSiyarwa = [];
@@ -850,7 +850,7 @@
     }
 
     async function dubaKoAnYiSuspend(userId) {
-        if(!userId) return false;
+        if(userId === '') return false;
         let { data } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
         if(data && data.status === 'suspended') return true;
         return false;
@@ -871,7 +871,7 @@
         await supabaseClient.auth.signOut();
         currentUser = null;
         isAdmin = false;
-        isViewingAsNormal = false;
+        isViewingAsAdmin = true;
         document.getElementById('mainDashboardWrapper').style.display = 'none';
         document.getElementById('sashinAuth').style.display = 'flex';
     }
@@ -895,7 +895,7 @@
 
         gugataTsarinSidebar();
 
-        if(isAdmin && !isViewingAsNormal) {
+        if(isAdmin && isViewingAsAdmin) {
             canzaShafi('sashinAdminDashboard');
             lodaBayananAdmin();
         } else {
@@ -904,15 +904,15 @@
         }
     }
 
-    function canzaZuwaNormalMode() {
-        isViewingAsNormal = true;
+    function canzaZuwaNormalUserMode() {
+        isViewingAsAdmin = false;
         gugataTsarinSidebar();
         canzaShafi('sashinSiyarwa');
         lodaBayaniDagaSupabase();
     }
 
-    function canzaZuwaAdminMode() {
-        isViewingAsNormal = false;
+    function canzaZuwaAdminDashboard() {
+        isViewingAsAdmin = true;
         gugataTsarinSidebar();
         canzaShafi('sashinAdminDashboard');
         lodaBayananAdmin();
@@ -922,16 +922,16 @@
         let menuList = document.getElementById('sidebarMenuList');
         let topSearchContainer = document.getElementById('topSearchContainer');
         
-        if(isAdmin && !isViewingAsNormal) {
+        if(isAdmin && isViewingAsAdmin) {
             topSearchContainer.style.display = 'none';
             menuList.innerHTML = `
                 <li onclick="canzaShafi('sashinAdminDashboard')">🛡️ Admin Dashboard</li>
-                <li onclick="canzaZuwaNormalMode()">💻 Shiga Normal User View</li>
+                <li onclick="canzaZuwaNormalUserMode()">👤 Shiga Matsayin User</li>
                 <li onclick="fitaDagaAccount()" style="background: rgba(255, 118, 117, 0.2); border-color: var(--danger-color); color: #ff7675;">🚪 Fita (Logout)</li>
             `;
         } else {
             topSearchContainer.style.display = 'block';
-            let adminReturnLi = isAdmin ? `<li onclick="canzaZuwaAdminMode()" style="background: rgba(214, 48, 49, 0.2); border-color: var(--admin-color); color: #ff7675;">🛡️ Komawa Admin Dash</li>` : '';
+            let adminBackMenu = (isAdmin) ? `<li onclick="canzaZuwaAdminDashboard()" style="background: rgba(214, 48, 49, 0.2); border-color: var(--admin-color); color: #ff7675;">🛡️ Komawa Admin Dashboard</li>` : '';
             menuList.innerHTML = `
                 <li onclick="canzaShafi('sashinSiyarwa')">🛒 Siyar da Kaya (Home)</li>
                 <li onclick="canzaShafi('sashinBashi')">🔍 Rubuta Bashi</li>
@@ -941,7 +941,7 @@
                 <li onclick="canzaShafi('sashinTeburSiyarwa')">📦 Record na Siyar da Kaya</li>
                 <li onclick="canzaShafi('sashinTebur')">✅ Fayilolin Basussuka</li>
                 <li onclick="canzaShafi('sashinSettingsMain')">⚙️ Settings (Saituna)</li>
-                ${adminReturnLi}
+                ${adminBackMenu}
                 <li onclick="fitaDagaAccount()" style="background: rgba(255, 118, 117, 0.2); border-color: var(--danger-color); color: #ff7675;">🚪 Fita (Logout)</li>
             `;
         }
@@ -958,24 +958,6 @@
             }
         }
     });
-
-    // Supabase Realtime Subscription for Live Updates & Instant Suspending
-    supabaseClient.channel('public-db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public' }, async (payload) => {
-            if(isAdmin && !isViewingAsNormal) {
-                lodaBayananAdmin();
-            }
-            if(currentUser) {
-                let suspended = await dubaKoAnYiSuspend(currentUser.id);
-                if(suspended && currentUser.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-                    alert("⚠️ An dakatar da (Suspend) wannan account ɗin nan take!");
-                    await fitaDagaAccount();
-                } else if(!isAdmin && currentUser) {
-                    lodaBayaniDagaSupabase();
-                }
-            }
-        })
-        .subscribe();
 
     async function lodaBayananAdmin() {
         if(!isAdmin) return;
@@ -996,18 +978,18 @@
         
         if(allProfiles && allProfiles.length > 0) {
             allProfiles.forEach(p => {
-                let isThisAdmin = p.email && p.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+                let isSelfAdmin = p.email && p.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
                 let statusBadge = p.status === 'suspended' ? 
                     `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : 
                     `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
                 
                 let actionBtn = "";
-                if(isThisAdmin) {
-                    actionBtn = `<span style="font-size:11px; color:#636e72; font-weight:bold;">(Babu damar Suspending Admin)</span>`;
+                if (isSelfAdmin) {
+                    actionBtn = `<span style="font-size:11px; color:#b2bec3; font-weight:bold;">(Keɓantacce)</span>`;
+                } else if (p.status === 'suspended') {
+                    actionBtn = `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>`;
                 } else {
-                    actionBtn = p.status === 'suspended' ? 
-                        `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : 
-                        `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+                    actionBtn = `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
                 }
 
                 usersTable.innerHTML += `<tr>
@@ -1020,15 +1002,11 @@
     }
 
     async function canzaUserStatus(userId, sabonStatus) {
-        let { data: targetProfile } = await supabaseClient.from('profiles').select('email').eq('id', userId).single();
-        if(targetProfile && targetProfile.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-            alert("Ba za ka iya yi wa kanka Suspending ba!");
-            return;
-        }
         let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
         if(!error) { 
-            alert(`An yi nasarar sa account ɗin ya zama ${sabonStatus} nan take!`); 
             lodaBayananAdmin(); 
+        } else {
+            alert("Kuskure wajen canza status: " + error.message);
         }
     }
 
@@ -1053,7 +1031,7 @@
     });
 
     function canzaShafi(shafiId) {
-        if(isAdmin && !isViewingAsNormal && shafiId !== 'sashinAdminDashboard') { alert("Kai Admin ne! Je zuwa Admin Dashboard ko Shiga Normal User View."); return; }
+        if(isAdmin && isViewingAsAdmin && shafiId !== 'sashinAdminDashboard') { alert("Kai Admin ne! Ka shiga matsayin User idan kana son amfani da tsarin."); return; }
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         const zabiShafi = document.getElementById(shafiId);
         if (zabiShafi) {
@@ -1232,6 +1210,7 @@
                 <div class="card-date-box">📅 Yau: ${new Date().toLocaleDateString()}</div>
             </div>
             <div style="text-align: left; max-height: 380px; overflow-y: auto; padding-right: 5px;">
+                
                 <div class="card-section-title">🛒 1. Siyan Kaya (Siyarwa) - ₦${totalSiyarwaAmount.toLocaleString()}</div>`;
         
         if(siyarwaItems.length === 0) {
@@ -1433,6 +1412,24 @@
         content.innerHTML = res.length > 0 ? res.join('<br><hr>') : "<p>Babu sakamako.</p>";
         box.style.display = "block";
     }
+
+    // Realtime listeners don tabbatar da komai yana zuwa live 100%
+    supabaseClient.channel('public:profiles')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
+            if(isAdmin && isViewingAsAdmin) lodaBayananAdmin();
+        }).subscribe();
+
+    supabaseClient.channel('public:siyarwa')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'siyarwa' }, payload => {
+            if(isAdmin && isViewingAsAdmin) lodaBayananAdmin();
+            if(currentUser && payload.new && payload.new.user_id === currentUser.id) lodaBayaniDagaSupabase();
+        }).subscribe();
+
+    supabaseClient.channel('public:basussuka')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'basussuka' }, payload => {
+            if(isAdmin && isViewingAsAdmin) lodaBayananAdmin();
+            if(currentUser && payload.new && payload.new.user_id === currentUser.id) lodaBayaniDagaSupabase();
+        }).subscribe();
 </script>
 </body>
 </html>
