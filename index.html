@@ -430,11 +430,11 @@
 
         /* PROFESSIONAL SUMMARY CARD (9:16 Ratio) */
         #summaryPreviewCard {
-            width: 380px;
-            min-height: 660px;
+            width: 360px;
+            min-height: 640px;
             background: linear-gradient(135deg, #0984e3 0%, #6c5ce7 100%);
             color: #ffffff;
-            padding: 22px 15px;
+            padding: 25px 15px;
             box-sizing: border-box;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
@@ -447,10 +447,10 @@
             position: relative;
         }
         .card-header-title { font-size: 18px; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; color: #fdcb6e; }
-        .card-customer-name { font-size: 20px; font-weight: 900; background: #ffffff; color: #2d3436; padding: 8px; border-radius: 8px; margin: 8px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-customer-name { font-size: 22px; font-weight: 900; background: #ffffff; color: #2d3436; padding: 8px; border-radius: 8px; margin: 8px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .card-date-box { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 8px; font-weight: bold; }
-        .card-section-title { font-size: 13px; font-weight: bold; color: #00cec9; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 4px; margin-top: 10px; text-align: left; }
-        .card-item-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin: 5px 0; background: rgba(0,0,0,0.15); padding: 6px 8px; border-radius: 6px; text-align: left; }
+        .card-section-title { font-size: 14px; font-weight: bold; color: #00cec9; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 4px; margin-top: 10px; text-align: left; }
+        .card-item-row { display: flex; justify-content: space-between; font-size: 12px; margin: 5px 0; background: rgba(0,0,0,0.15); padding: 6px 8px; border-radius: 6px; text-align: left; }
         .card-footer-sirdique { font-size: 11px; margin-top: 15px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); font-weight: 700; }
         .card-footer-sirdique span:nth-child(1) { color: #ff7675; }
         .card-footer-sirdique span:nth-child(2) { color: #fab1a0; }
@@ -601,15 +601,17 @@
             <div id="sashinSummaryDownload" class="page-section">
                 <div class="container">
                     <h2>📥 Bincike & Download Summary</h2>
-                    <p style="font-size: 12px; color: #636e72; margin-bottom: 12px;">Idan ka bar wurin sunan a bazu, tsarin zai haɗa maku da **General Summary** na kowa da kowa.</p>
                     <div class="form-group">
-                        <label for="searchSummaryName">Sunan Abokin Ciniki (Optional):</label>
-                        <input type="text" id="searchSummaryName" placeholder="Bar shi a bazu ko rubuta suna..." oninput="generateCustomerSummary()">
+                        <label for="searchSummaryName">Sunan Abokin Ciniki (Bari a buɗe don General Summary):</label>
+                        <input type="text" id="searchSummaryName" placeholder="Rubuta suna ko bar shi a banza..." oninput="generateCustomerSummary()">
                     </div>
                     <div class="form-group">
-                        <label for="filterMonthSelect">Zaɓi Watan (Optional):</label>
+                        <label for="filterMonthSelect">Zaɓi Lokaci / Watanni:</label>
                         <select id="filterMonthSelect" onchange="generateCustomerSummary()">
-                            <option value="">Duk Watanni (All)</option>
+                            <option value="">Duk Lokaci (All / General)</option>
+                            <option value="today">Yau (Today)</option>
+                            <option value="yesterday">Jiya (Yesterday)</option>
+                            <option value="this_week">Wannan Sati (This Week)</option>
                             <option value="01">Janairu</option><option value="02">Fabrairu</option><option value="03">Maris</option>
                             <option value="04">Afrilu</option><option value="05">Mayu</option><option value="06">Yuni</option>
                             <option value="07">Yuli</option><option value="08">Agusta</option><option value="09">Satumba</option>
@@ -617,7 +619,7 @@
                         </select>
                     </div>
                     <div id="summaryPreviewWrapper" style="overflow-x: auto; margin-bottom: 15px;">
-                        <div id="summaryPreviewBox"><i>Ana loda bayanan...</i></div>
+                        <div id="summaryPreviewBox"><i>Ana loda bayanai...</i></div>
                     </div>
                     <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryCard()" style="background: var(--primary-color);">📥 Download Professional Card (9:16)</button>
                 </div>
@@ -936,7 +938,7 @@
             menuList.innerHTML = `
                 <li onclick="canzaShafi('sashinSiyarwa')">🛒 Siyar da Kaya (Home)</li>
                 <li onclick="canzaShafi('sashinBashi')">🔍 Rubuta Bashi</li>
-                <li onclick="canzaShafi('sashinSummaryDownload')">📥 Bincike & Download Summary</li>
+                <li onclick="canzaShafi('sashinSummaryDownload'); generateCustomerSummary();">📥 Bincike & Download Summary</li>
                 <li onclick="canzaShafi('sashinCalculator')">🧮 Live Calculator</li>
                 <li onclick="canzaShafi('sashinFilesRecord')">📂 File Record (Fayiloli)</li>
                 <li onclick="canzaShafi('sashinTeburSiyarwa')">📦 Record na Siyar da Kaya</li>
@@ -1093,9 +1095,7 @@
 
         nunaTebur();
         nunaTeburSiyarwa();
-        if(document.getElementById('sashinSummaryDownload').classList.contains('active')) {
-            generateCustomerSummary();
-        }
+        generateCustomerSummary();
     }
 
     async function ajiyeSabonFileTsantsa() {
@@ -1115,7 +1115,7 @@
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
         let d = new Date();
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), type: 'Siyarwa' };
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), rawDate: d.toISOString(), type: 'Siyarwa' };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
 
         if (maiSayaDawn) {
@@ -1145,7 +1145,7 @@
         if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
         let d = new Date();
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), type: 'Bashi' };
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), rawDate: d.toISOString(), type: 'Bashi' };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
 
         if (mutumDawn) {
@@ -1168,113 +1168,165 @@
         canzaShafi('sashinTebur');
     }
 
-    // 🌟 MASHIN BINCİKE & GENERAL SUMMARY MAI ZAMAN KANSA
     function generateCustomerSummary() {
         let keyword = document.getElementById('searchSummaryName').value.trim().toLowerCase();
-        let selectedMonth = document.getElementById('filterMonthSelect').value;
+        let filterOption = document.getElementById('filterMonthSelect').value;
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
 
-        let filteredSiyarwaRecords = [...jerinSiyarwa];
-        let filteredBashiRecords = [...jerinBasussuka];
+        let todayStr = new Date().toDateString();
+        
+        // Helper to check date filters
+        function checkDateFilter(itemDateStr, rawDateStr) {
+            if (filterOption === "") return true;
+            let itemDate = rawDateStr ? new Date(rawDateStr) : (itemDateStr ? new Date(itemDateStr) : null);
+            if (!itemDate || isNaN(itemDate)) return true;
 
-        if (keyword !== "") {
-            filteredSiyarwaRecords = filteredSiyarwaRecords.filter(s => s.maiSaya.toLowerCase().includes(keyword));
-            filteredBashiRecords = filteredBashiRecords.filter(b => b.suna.toLowerCase().includes(keyword));
+            let now = new Date();
 
-            if (filteredSiyarwaRecords.length === 0 && filteredBashiRecords.length === 0) {
-                previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu mai suna "${keyword}".</span>`;
-                downloadBtn.style.display = "none";
-                return;
+            if (filterOption === "today") {
+                return itemDate.toDateString() === now.toDateString();
+            } else if (filterOption === "yesterday") {
+                let yest = new Date();
+                yest.setDate(now.getDate() - 1);
+                return itemDate.toDateString() === yest.toDateString();
+            } else if (filterOption === "this_week") {
+                let firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                return itemDate >= firstDayOfWeek;
+            } else {
+                // Month filter (e.g., '01', '02')
+                let parts = itemDateStr ? itemDateStr.split('/') : [];
+                return parts.length >= 2 && parts[0].padStart(2, '0') === filterOption;
             }
         }
 
-        let isGeneral = (keyword === "");
-        let titleName = isGeneral ? "General Summary (Kowa da Kowa)" : (filteredSiyarwaRecords[0] ? filteredSiyarwaRecords[0].maiSaya : filteredBashiRecords[0].suna);
+        // GENERAL SUMMARY MODE (Idan babu suna aka rubuta)
+        if (keyword === "") {
+            let allSiyarwaItems = [];
+            jerinSiyarwa.forEach(s => {
+                if (s.history) {
+                    s.history.forEach(h => {
+                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
+                            allSiyarwaItems.push({ customer: s.maiSaya, ...h });
+                        }
+                    });
+                }
+            });
 
-        let cardHtml = `<div id="summaryPreviewCard">
-            <div>
-                <div class="card-header-title">${isGeneral ? 'General Summary' : 'Tarihin Kasuwanci'}</div>
-                <div class="card-customer-name">${titleName}</div>
-                <div class="card-date-box">📅 Yau: ${new Date().toLocaleDateString()}</div>
-            </div>
-            <div style="text-align: left; max-height: 400px; overflow-y: auto; padding-right: 5px;">`;
+            let allBashiItems = [];
+            jerinBasussuka.forEach(b => {
+                if (b.history) {
+                    b.history.forEach(h => {
+                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
+                            allBashiItems.push({ customer: b.suna, ...h });
+                        }
+                    });
+                }
+            });
 
-        if (isGeneral) {
-            // GENERAL SUMMARY RENDER (KOWA DA KOWA)
-            let grandTotalSales = 0;
-            let grandTotalDebts = 0;
+            let totalGenSiyarwa = allSiyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
+            let totalGenBashi = allBashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
 
-            cardHtml += `<div class="card-section-title">🛒 1. Bangaren Siyarwa (Duk Abokan Ciniki)</div>`;
-            if (filteredSiyarwaRecords.length === 0) {
-                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan siyarwa.</div>`;
+            let cardHtml = `<div id="summaryPreviewCard">
+                <div>
+                    <div class="card-header-title">General Summary Card</div>
+                    <div class="card-customer-name">Dukkan Abokan Ciniki</div>
+                    <div class="card-date-box">📅 ${new Date().toLocaleDateString()}</div>
+                </div>
+                <div style="text-align: left; max-height: 380px; overflow-y: auto; padding-right: 5px;">
+                    
+                    <div class="card-section-title">🛒 Siyarwa - ₦${totalGenSiyarwa.toLocaleString()}</div>`;
+            
+            if (allSiyarwaItems.length === 0) {
+                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan siyarwa a wannan lokacin.</div>`;
             } else {
-                filteredSiyarwaRecords.forEach(s => {
-                    grandTotalSales += s.kudi;
+                allSiyarwaItems.forEach(act => {
                     cardHtml += `<div class="card-item-row">
-                        <div><b>${s.maiSaya}</b><br><small style="opacity:0.8;">Jimillar Siyarwa</small></div>
-                        <div style="font-weight:bold; color:#00cec9;">₦${Number(s.kudi).toLocaleString()}</div>
-                    </div>`;
-                });
-            }
-            cardHtml += `<div style="text-align:right; font-size:12px; font-weight:bold; margin: 6px 0; color:#00cec9;">Jimillar Siyarwa: ₦${grandTotalSales.toLocaleString()}</div>`;
-
-            cardHtml += `<div class="card-section-title" style="margin-top: 10px; color: #ff7675;">📝 2. Bangaren Basussuka (Duk Abokan Ciniki)</div>`;
-            if (filteredBashiRecords.length === 0) {
-                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan bashi.</div>`;
-            } else {
-                filteredBashiRecords.forEach(b => {
-                    grandTotalDebts += b.kudi;
-                    cardHtml += `<div class="card-item-row">
-                        <div><b>${b.suna}</b><br><small style="opacity:0.8;">Jimillar Bashi</small></div>
-                        <div style="font-weight:bold; color:#ff7675;">₦${Number(b.kudi).toLocaleString()}</div>
-                    </div>`;
-                });
-            }
-            cardHtml += `<div style="text-align:right; font-size:12px; font-weight:bold; margin: 6px 0; color:#ff7675;">Jimillar Bashi: ₦${grandTotalDebts.toLocaleString()}</div>`;
-
-        } else {
-            // INDIVIDUAL SUMMARY WITH NOTES & TIMELINE
-            let siyarwaItems = filteredSiyarwaRecords[0] && filteredSiyarwaRecords[0].history ? [...filteredSiyarwaRecords[0].history] : [];
-            let bashiItems = filteredBashiRecords[0] && filteredBashiRecords[0].history ? [...filteredBashiRecords[0].history] : [];
-
-            if (selectedMonth !== "") {
-                siyarwaItems = siyarwaItems.filter(item => {
-                    let parts = item.dateOnly ? item.dateOnly.split('/') : [];
-                    return parts.length >= 2 && parts[0].padStart(2, '0') === selectedMonth;
-                });
-                bashiItems = bashiItems.filter(item => {
-                    let parts = item.dateOnly ? item.dateOnly.split('/') : [];
-                    return parts.length >= 2 && parts[0].padStart(2, '0') === selectedMonth;
-                });
-            }
-
-            let totalSiyarwaAmount = siyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
-            let totalBashiAmount = bashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
-
-            cardHtml += `<div class="card-section-title">🛒 Siyan Kaya (Siyarwa) - ₦${totalSiyarwaAmount.toLocaleString()}</div>`;
-            if(siyarwaItems.length === 0) {
-                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan siyarwa.</div>`;
-            } else {
-                siyarwaItems.forEach(act => {
-                    cardHtml += `<div class="card-item-row">
-                        <div><b>${act.kaya}</b><br><small style="opacity:0.8;">${act.lokaci}</small></div>
+                        <div><b>${act.customer}</b>: ${act.kaya}<br><small style="opacity:0.8;">${act.lokaci}</small></div>
                         <div style="font-weight:bold; color:#00cec9;">₦${Number(act.kudi).toLocaleString()}</div>
                     </div>`;
                 });
             }
 
-            cardHtml += `<div class="card-section-title" style="margin-top: 10px; color: #ff7675;">📝 Debite (Basussuka) - ₦${totalBashiAmount.toLocaleString()}</div>`;
-            if(bashiItems.length === 0) {
-                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan bashi.</div>`;
+            cardHtml += `<div class="card-section-title" style="margin-top: 12px; color: #ff7675;">📝 Basussuka - ₦${totalGenBashi.toLocaleString()}</div>`;
+
+            if (allBashiItems.length === 0) {
+                cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan bashi a wannan lokacin.</div>`;
             } else {
-                bashiItems.forEach(act => {
+                allBashiItems.forEach(act => {
                     cardHtml += `<div class="card-item-row">
-                        <div><b>${act.kaya}</b><br><small style="opacity:0.8;">${act.lokaci}</small></div>
+                        <div><b>${act.customer}</b>: ${act.kaya}<br><small style="opacity:0.8;">${act.lokaci}</small></div>
                         <div style="font-weight:bold; color:#ff7675;">₦${Number(act.kudi).toLocaleString()}</div>
                     </div>`;
                 });
             }
+
+            cardHtml += `</div>
+                <div class="card-footer-sirdique">
+                    Powered by 
+                    <span>S</span><span>i</span><span>r</span><span>d</span><span>i</span><span>q</span><span>u</span><span>e</span>
+                </div>
+            </div>`;
+
+            previewBox.innerHTML = cardHtml;
+            downloadBtn.style.display = "block";
+            return;
+        }
+
+        // INDIVIDUAL SUMMARY MODE (Idan aka zabi suna)
+        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
+        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
+
+        if (!bashiRecord && !siyarwaRecord) { 
+            previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu mai suna "${keyword}".</span>`; 
+            downloadBtn.style.display = "none"; 
+            return; 
+        }
+
+        let customerName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
+        
+        let siyarwaItems = siyarwaRecord && siyarwaRecord.history ? [...siyarwaRecord.history] : [];
+        let bashiItems = bashiRecord && bashiRecord.history ? [...bashiRecord.history] : [];
+
+        siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
+        bashiItems = bashiItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
+
+        let totalSiyarwaAmount = siyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
+        let totalBashiAmount = bashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
+
+        let cardHtml = `<div id="summaryPreviewCard">
+            <div>
+                <div class="card-header-title">Tarihin Kasuwanci</div>
+                <div class="card-customer-name">${customerName}</div>
+                <div class="card-date-box">📅 Yau: ${new Date().toLocaleDateString()}</div>
+            </div>
+            <div style="text-align: left; max-height: 380px; overflow-y: auto; padding-right: 5px;">
+                
+                <div class="card-section-title">🛒 1. Siyan Kaya (Siyarwa) - ₦${totalSiyarwaAmount.toLocaleString()}</div>`;
+        
+        if(siyarwaItems.length === 0) {
+            cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan siyarwa a wannan lokacin.</div>`;
+        } else {
+            siyarwaItems.forEach(act => {
+                let debitTag = act.wasDebit ? ' <small style="background:#d63031; padding:2px 4px; border-radius:4px;">(Taɓa Bashi)</small>' : '';
+                cardHtml += `<div class="card-item-row">
+                    <div><b>${act.kaya}</b>${debitTag}<br><small style="opacity:0.8;">${act.lokaci}</small></div>
+                    <div style="font-weight:bold; color:#00cec9;">₦${Number(act.kudi).toLocaleString()}</div>
+                </div>`;
+            });
+        }
+
+        cardHtml += `<div class="card-section-title" style="margin-top: 12px; color: #ff7675;">📝 2. Debite (Basussuka) - ₦${totalBashiAmount.toLocaleString()}</div>`;
+
+        if(bashiItems.length === 0) {
+            cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan bashi a wannan lokacin.</div>`;
+        } else {
+            bashiItems.forEach(act => {
+                cardHtml += `<div class="card-item-row">
+                    <div><b>${act.kaya}</b><br><small style="opacity:0.8;">${act.lokaci}</small></div>
+                    <div style="font-weight:bold; color:#ff7675;">₦${Number(act.kudi).toLocaleString()}</div>
+                </div>`;
+            });
         }
 
         cardHtml += `</div>
@@ -1452,6 +1504,7 @@
         box.style.display = "block";
     }
 
+    // Realtime listeners
     supabaseClient.channel('public:profiles')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
             if(isAdmin && isViewingAsAdmin) lodaBayananAdmin();
