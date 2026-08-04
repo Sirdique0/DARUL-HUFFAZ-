@@ -526,7 +526,7 @@
                         <button class="btn-voice" onclick="faraMoriSiyarwa()">🎙 Yi Magana (Murya)</button>
                     </div>
                     <div class="form-group">
-                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani:</label>
+                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani (Note):</label>
                         <textarea id="kayanDaAkaSiyar" placeholder="Misali: Sabulu guda 2..."></textarea>
                     </div>
                     <div class="form-group">
@@ -547,7 +547,7 @@
                         <button class="btn-voice" onclick="faraMoriBashi()">🎙 Yi Magana (Murya)</button>
                     </div>
                     <div class="form-group">
-                        <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya ko Dalili):</label>
+                        <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya/Note):</label>
                         <textarea id="abinDaYaAnsa" placeholder="Misali: Shinkafa..."></textarea>
                     </div>
                     <div class="form-group">
@@ -743,15 +743,14 @@
     </div>
 
     <div class="modal" id="customerFileModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 480px;">
             <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0;">Cikakken Tarihi</h3>
-            <div id="customerFileContent" style="font-size: 14px; max-height: 250px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
+            <div id="customerFileContent" style="font-size: 13px; max-height: 320px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
             <button class="close-btn" onclick="rufeCustomerFileModal()">Rufe</button>
         </div>
     </div>
 
 <script>
-    // An sanya Supabase URL da Anon Key ɗinka anan ba tare da an canza komai ba
     const SUPABASE_URL = 'https://grqxewgjoklhiateyvbq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_2VXQlOWBCQlXiaB_MwbJFg_Y-zAxVtj';
     
@@ -788,7 +787,6 @@
             let { data, error } = await supabaseClient.auth.signUp({ email, password });
             if(error) { alert("Kuskure: " + error.message); }
             else { 
-                // Idan an yi sign up, a ƙirƙiri matsayinsa na active a profiles table
                 if(data.user) {
                     await supabaseClient.from('profiles').upsert([{ id: data.user.id, email: email, status: 'active' }]);
                 }
@@ -800,7 +798,6 @@
             if(error) { alert("Kuskure wajen shiga: " + error.message); }
             else { 
                 currentUser = data.user;
-                // Bincika ko an yi suspend ɗin user ɗin nan
                 let suspended = await dubaKoAnYiSuspend(currentUser.id);
                 if(suspended) {
                     alert("⚠️ Ƙishirwa! An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
@@ -844,10 +841,8 @@
     async function budeDashboard() {
         if(!currentUser) return;
         
-        // Tabbatar ko Admin ne ko mai account na al'ada
         isAdmin = (currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 
-        // Har ila yau duba status dinsa idan yana cikin app
         let suspended = await dubaKoAnYiSuspend(currentUser.id);
         if(suspended && !isAdmin) {
             alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
@@ -947,7 +942,7 @@
                 </tr>`;
             });
         } else {
-            usersTable.innerHTML = `<tr><td colspan="3" style="text-align:center;">Babu bayanan profiles a halin yanzu. (Tabbatar kana da 'profiles' table a Supabase).</td></tr>`;
+            usersTable.innerHTML = `<tr><td colspan="3" style="text-align:center;">Babu bayanan profiles a halin yanzu.</td></tr>`;
         }
     }
 
@@ -1034,7 +1029,6 @@
     async function lodaBayaniDagaSupabase() {
         if(!currentUser || isAdmin) return;
         
-        // Duba status din user kafin loda komai
         let suspended = await dubaKoAnYiSuspend(currentUser.id);
         if(suspended) {
             alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
@@ -1126,7 +1120,7 @@
 
         let summaryText = `===== SUMMARY =====\n`, htmlText = ``;
         if (siyarwaRecord) {
-            summaryText += `MAI SAYA: ${siyarwaRecord.maiSaya}\nJIla: ₦${siyarwaRecord.kudi.toLocaleString()}\n`;
+            summaryText += `MAI SAYA: ${siyarwaRecord.maiSaya}\nJimla: ₦${siyarwaRecord.kudi.toLocaleString()}\n`;
             htmlText += `<b>Mai Saya:</b> ${siyarwaRecord.maiSaya}<br><b>Jimla:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br>`;
         }
         if (bashiRecord) {
@@ -1197,18 +1191,55 @@
     }
     function rufeCustomerOptionsModal() { document.getElementById('customerOptionsModal').classList.remove('active-modal'); }
 
+    // Wajen da aka gyara don nuna history ɗaya bayan ɗaya tare da Note da Date/Time
     function budeZaɓiFayil(type) {
         rufeCustomerOptionsModal();
         let suna = currentSelectedCustomer;
         let bashiData = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
         let siyarwaData = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
-        document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
-        let contentHtml = type === 'Siyarwa' ? (siyarwaData ? `Jimillar Siyarwa: ₦${siyarwaData.kudi.toLocaleString()}` : 'Babu') : 
-                          type === 'Bashi' ? (bashiData ? `Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}` : 'Babu') : 
-                          `Siyarwa: ${siyarwaData ? '₦'+siyarwaData.kudi.toLocaleString() : '₦0'}<br>Bashi: ${bashiData ? '₦'+bashiData.kudi.toLocaleString() : '₦0'}`;
-        document.getElementById('customerFileContent').innerHTML = contentHtml;
+        
+        document.getElementById('customerFileTitle').innerText = `Tarihin: ${suna} (${type})`;
+        let htmlContent = "";
+
+        if (type === 'Siyarwa' || type === 'All') {
+            htmlContent += `<h4 style="color:var(--success-color); margin:5px 0;">🛒 Siyar da Kaya:</h4>`;
+            if (siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
+                htmlContent += `<p style="font-weight:bold; margin:2px 0;">Jimillar Kuɗi: ₦${siyarwaData.kudi.toLocaleString()}</p><ul style="padding-left:15px; margin-top:5px;">`;
+                siyarwaData.history.forEach((h, index) => {
+                    htmlContent += `<li style="margin-bottom:8px; border-bottom:1px dashed #ddd; padding-bottom:5px;">
+                        <b>#${index + 1}</b> - <span style="color:var(--success-color); font-weight:bold;">₦${Number(h.kudi).toLocaleString()}</span><br>
+                        <i style="color:#555;">Note: ${h.kaya}</i><br>
+                        <span style="font-size:11px; color:#888;">📅 ${h.lokaci}</span>
+                    </li>`;
+                });
+                htmlContent += `</ul>`;
+            } else {
+                htmlContent += `<p style="color:#777; font-size:12px;">Babu tarihin siyarwa.</p>`;
+            }
+        }
+
+        if (type === 'Bashi' || type === 'All') {
+            if (type === 'All') htmlContent += `<hr style="margin:15px 0;">`;
+            htmlContent += `<h4 style="color:var(--danger-color); margin:5px 0;">📝 Basussuka:</h4>`;
+            if (bashiData && bashiData.history && bashiData.history.length > 0) {
+                htmlContent += `<p style="font-weight:bold; margin:2px 0;">Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}</p><ul style="padding-left:15px; margin-top:5px;">`;
+                bashiData.history.forEach((h, index) => {
+                    htmlContent += `<li style="margin-bottom:8px; border-bottom:1px dashed #ddd; padding-bottom:5px;">
+                        <b>#${index + 1}</b> - <span style="color:var(--danger-color); font-weight:bold;">₦${Number(h.kudi).toLocaleString()}</span><br>
+                        <i style="color:#555;">Note: ${h.kaya}</i><br>
+                        <span style="font-size:11px; color:#888;">📅 ${h.lokaci}</span>
+                    </li>`;
+                });
+                htmlContent += `</ul>`;
+            } else {
+                htmlContent += `<p style="color:#777; font-size:12px;">Babu tarihin bashi.</p>`;
+            }
+        }
+
+        document.getElementById('customerFileContent').innerHTML = htmlContent;
         document.getElementById('customerFileModal').classList.add('active-modal');
     }
+
     function rufeCustomerFileModal() { document.getElementById('customerFileModal').classList.remove('active-modal'); }
 
     function nunaTebur() {
