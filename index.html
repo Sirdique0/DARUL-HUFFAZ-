@@ -7,6 +7,8 @@
     
     <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Html2Canvas for downloading styled summary card -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
@@ -425,6 +427,38 @@
             background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 10px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center; font-weight: bold;
         }
+
+        /* PROFESSIONAL SUMMARY CARD (9:16 Ratio) */
+        #summaryPreviewCard {
+            width: 360px;
+            min-height: 640px;
+            background: linear-gradient(135deg, #0984e3 0%, #6c5ce7 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+        .card-header-title { font-size: 20px; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; color: #fdcb6e; }
+        .card-customer-name { font-size: 24px; font-weight: 900; background: #ffffff; color: #2d3436; padding: 10px; border-radius: 10px; margin: 10px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-date-box { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+        .card-section-title { font-size: 15px; font-weight: bold; color: #00cec9; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 4px; margin-top: 15px; text-align: left; }
+        .card-item-row { display: flex; justify-content: space-between; font-size: 13px; margin: 6px 0; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 6px; text-align: left; }
+        .card-footer-sirdique { font-size: 11px; margin-top: 20px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); font-weight: 700; }
+        .card-footer-sirdique span:nth-child(1) { color: #ff7675; }
+        .card-footer-sirdique span:nth-child(2) { color: #fab1a0; }
+        .card-footer-sirdique span:nth-child(3) { color: #fdcb6e; }
+        .card-footer-sirdique span:nth-child(4) { color: #00b894; }
+        .card-footer-sirdique span:nth-child(5) { color: #00cec9; }
+        .card-footer-sirdique span:nth-child(6) { color: #6c5ce7; }
+        .card-footer-sirdique span:nth-child(7) { color: #a29bfe; }
     </style>
 </head>
 <body onload="faraAgogo()">
@@ -493,7 +527,7 @@
             <div id="sashinAdminDashboard" class="page-section">
                 <div class="container">
                     <h2 style="color: var(--admin-color);">🛡️ Admin Dashboard (Keɓantacce)</h2>
-                    <p style="font-size: 13px; color: #636e72;">Barka da zuwa mai kula da tsarin (Admin). Ga bayanan gaba ɗaya:</p>
+                    <p style="font-size: 13px; color: #636e72;">Barka da zuwa mai kula da tsarin (Admin). Ga bayanan gaba ɗaya na tsarin:</p>
                     
                     <div class="admin-stat-card">
                         <span>👥 Jimillar Masu Amfani (Users):</span> <span id="adminTotalUsers" style="color: var(--admin-color); font-size: 18px;">0</span>
@@ -505,11 +539,11 @@
                         <span>📝 Jimillar Basussuka a Tsarin:</span> <span id="adminTotalDebts" style="color: var(--danger-color); font-size: 18px;">₦0</span>
                     </div>
 
-                    <h3 style="font-size: 16px; margin-top: 20px;">Lissafin Masu Amfani & Suspending</h3>
+                    <h3 style="font-size: 16px; margin-top: 20px;">Lissafin Masu Amfani da Tsarin & Suspending</h3>
                     <div style="overflow-x: auto;">
                         <table>
                             <thead>
-                                <tr><th>Email ɗin User</th><th>Matsayi (Status)</th><th>Ayyuka</th></tr>
+                                <tr><th>Email ɗin User</th><th>Matsayi (Status)</th><th>Ayyuka (Actions)</th></tr>
                             </thead>
                             <tbody id="adminUsersTableBody"></tbody>
                         </table>
@@ -527,7 +561,7 @@
                         <button class="btn-voice" onclick="faraMoriSiyarwa()">🎙 Yi Magana (Murya)</button>
                     </div>
                     <div class="form-group">
-                        <label for="kayanDaAkaSiyar">Sunan Kaya / Notes:</label>
+                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani (Notes):</label>
                         <textarea id="kayanDaAkaSiyar" placeholder="Misali: Sabulu guda 2..."></textarea>
                     </div>
                     <div class="form-group">
@@ -568,27 +602,19 @@
                         <input type="text" id="searchSummaryName" placeholder="Rubuta sunan..." oninput="generateCustomerSummary()">
                     </div>
                     <div class="form-group">
-                        <label for="filterMonthSelect">Zaɓi Wata (Month Filter):</label>
+                        <label for="filterMonthSelect">Zaɓi Watan (Optional):</label>
                         <select id="filterMonthSelect" onchange="generateCustomerSummary()">
-                            <option value="all">Duk Watanni (All Time)</option>
-                            <option value="01">Janairu (01)</option>
-                            <option value="02">Fabrairu (02)</option>
-                            <option value="03">Maris (03)</option>
-                            <option value="04">Afrilu (04)</option>
-                            <option value="05">Mayu (05)</option>
-                            <option value="06">Yuni (06)</option>
-                            <option value="07">Yuli (07)</option>
-                            <option value="08">Agusta (08)</option>
-                            <option value="09">Satumba (09)</option>
-                            <option value="10">Oktoba (10)</option>
-                            <option value="11">Nuwamba (11)</option>
-                            <option value="12">Disamba (12)</option>
+                            <option value="">Duk Watanni (All)</option>
+                            <option value="01">Janairu</option><option value="02">Fabrairu</option><option value="03">Maris</option>
+                            <option value="04">Afrilu</option><option value="05">Mayu</option><option value="06">Yuni</option>
+                            <option value="07">Yuli</option><option value="08">Agusta</option><option value="09">Satumba</option>
+                            <option value="10">Oktoba</option><option value="11">Nuwamba</option><option value="12">Disamba</option>
                         </select>
                     </div>
-                    <div id="summaryPreviewBox" style="background: #f9f9f9; border: 1px solid #dfe6e9; padding: 12px; border-radius: 8px; font-size: 13px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
-                        <i>Babu sunan da aka rubuta tukuna...</i>
+                    <div id="summaryPreviewWrapper" style="overflow-x: auto; margin-bottom: 15px;">
+                        <div id="summaryPreviewBox"><i>Babu sunan da aka rubuta tukuna...</i></div>
                     </div>
-                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryReceipt()" style="background: var(--primary-color); display: none;">📥 Download Professional Receipt (9:16)</button>
+                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryCard()" style="background: var(--primary-color); display: none;">📥 Download Professional Card (9:16)</button>
                 </div>
             </div>
 
@@ -751,21 +777,11 @@
         </div>
     </div>
 
-    <div class="modal" id="customerOptionsModal">
-        <div class="modal-content" style="text-align: center;">
-            <h3 id="optModalCustomerName" style="color: var(--primary-color); margin-top: 0;"></h3>
-            <button class="btn-voice" style="background: var(--accent-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Siyarwa')">🛒 Bayanan Siyar da Kaya</button>
-            <button class="btn-voice" style="background: var(--warning-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Bashi')">📝 Bayanan Bashi</button>
-            <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Dukansu Tare (All)</button>
-            <button onclick="gogeFileDinMutum(currentSelectedCustomer)" style="background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">🗑️ Goge Wannan Fayil ɗin</button>
-            <button class="close-btn" onclick="rufeCustomerOptionsModal()">Rufe</button>
-        </div>
-    </div>
-
     <div class="modal" id="customerFileModal">
-        <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-content" style="max-width: 500px;">
             <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0;">Cikakken Tarihi</h3>
-            <div id="customerFileContent" style="font-size: 13px; max-height: 320px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
+            <div id="customerFileContent" style="font-size: 13px; max-height: 350px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
+            <button class="btn-primary" onclick="gogeFayilMutum()" style="background: var(--danger-color); margin-top: 10px;">🗑 Goge Wannan Fayil ɗin</button>
             <button class="close-btn" onclick="rufeCustomerFileModal()">Rufe</button>
         </div>
     </div>
@@ -773,7 +789,6 @@
 <script>
     const SUPABASE_URL = 'https://grqxewgjoklhiateyvbq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_2VXQlOWBCQlXiaB_MwbJFg_Y-zAxVtj';
-    
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const ADMIN_EMAIL = 'abubakarsadeeq8533@gmail.com';
 
@@ -809,7 +824,7 @@
                 if(data.user) {
                     await supabaseClient.from('profiles').upsert([{ id: data.user.id, email: email, status: 'active' }]);
                 }
-                alert("An buɗe account! Yanzu za ka iya shiga."); 
+                alert("An buɗe account tare da tura saƙon tabbatarwa. Yanzu za ka iya shiga!"); 
                 canzaTsarinAuth(); 
             }
         } else {
@@ -819,7 +834,7 @@
                 currentUser = data.user;
                 let suspended = await dubaKoAnYiSuspend(currentUser.id);
                 if(suspended) {
-                    alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
+                    alert("⚠️ Ƙishirwa! An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
                     await supabaseClient.auth.signOut();
                     currentUser = null;
                     return;
@@ -861,7 +876,7 @@
 
         let suspended = await dubaKoAnYiSuspend(currentUser.id);
         if(suspended && !isAdmin) {
-            alert("⚠️ An dakatar da account ɗin.");
+            alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
             await fitaDagaAccount();
             return;
         }
@@ -923,10 +938,9 @@
 
     async function lodaBayananAdmin() {
         if(!isAdmin) return;
-        let { data: allFiles } = await supabaseClient.from('customer_files').select('*');
+        let { data: allProfiles } = await supabaseClient.from('profiles').select('*');
         let { data: allSiyarwa } = await supabaseClient.from('siyarwa').select('*');
         let { data: allBasussuka } = await supabaseClient.from('basussuka').select('*');
-        let { data: allProfiles } = await supabaseClient.from('profiles').select('*');
 
         let totalSalesVal = allSiyarwa ? allSiyarwa.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
         let totalDebtsVal = allBasussuka ? allBasussuka.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
@@ -938,18 +952,29 @@
 
         let usersTable = document.getElementById('adminUsersTableBody');
         usersTable.innerHTML = "";
+        
         if(allProfiles && allProfiles.length > 0) {
             allProfiles.forEach(p => {
-                let statusBadge = p.status === 'suspended' ? `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
-                let actionBtn = p.status === 'suspended' ? `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Active</button>` : `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend</button>`;
-                usersTable.innerHTML += `<tr><td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td><td>${statusBadge}</td><td>${actionBtn}</td></tr>`;
+                let statusBadge = p.status === 'suspended' ? 
+                    `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : 
+                    `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
+                
+                let actionBtn = p.status === 'suspended' ? 
+                    `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : 
+                    `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+
+                usersTable.innerHTML += `<tr>
+                    <td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionBtn}</td>
+                </tr>`;
             });
         }
     }
 
     async function canzaUserStatus(userId, sabonStatus) {
-        await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
-        lodaBayananAdmin();
+        let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
+        if(!error) { alert(`An yi nasarar sa account ɗin ya zama ${sabonStatus}!`); lodaBayananAdmin(); }
     }
 
     function faraAgogo() {
@@ -992,15 +1017,15 @@
 
     async function yiUpdatePassword() {
         let sabonPass = document.getElementById('newPasswordInput').value.trim();
-        if(!sabonPass) { alert("Rubuta sabuwar kalmar sirri!"); return; }
+        if(!sabonPass) { alert("Don Allah rubuta sabuwar kalmar sirri!"); return; }
         let { error } = await supabaseClient.auth.updateUser({ password: sabonPass });
-        if(error) alert("Kuskure: " + error.message);
-        else { alert("An sauya kalmar sirri!"); document.getElementById('newPasswordInput').value = ""; canzaShafi('sashinSettingsMain'); }
+        if(error) { alert("Kuskure: " + error.message); }
+        else { alert("An yi nasarar sauya kalmar sirri!"); document.getElementById('newPasswordInput').value = ""; canzaShafi('sashinSettingsMain'); }
     }
 
     function faraMoriSiyarwa() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
+        if (!SpeechRecognition) return;
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -1009,7 +1034,7 @@
 
     function faraMoriBashi() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
+        if (!SpeechRecognition) return;
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -1037,7 +1062,7 @@
 
     async function ajiyeSabonFileTsantsa() {
         let suna = document.getElementById('newFileCustomerName').value.trim();
-        if (suna === "") { alert("Rubuta sunan abokin ciniki!"); return; }
+        if (suna === "") { alert("Don Allah rubuta sunan abokin ciniki!"); return; }
         await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
         document.getElementById('newFileCustomerName').value = "";
         rufeCreateFileModal();
@@ -1045,30 +1070,15 @@
         nunaJerinSunayenFiles();
     }
 
-    async function gogeFileDinMutum(suna) {
-        if(!confirm(`Kuna son goge fayil ɗin ${suna}? (Tarihin sa zai cigaba da kasancewa a tsarin suyarwa/bashi).`)) return;
-        rufeCustomerOptionsModal();
-        await supabaseClient.from('customer_files').delete().eq('user_id', currentUser.id).eq('suna', suna);
-        await lodaBayaniDagaSupabase();
-        nunaJerinSunayenFiles();
-        alert("An goge fayil ɗin cikin nasara!");
-    }
-
     async function gwadaAjiyeSiyarwa() {
         let maiSaya = document.getElementById('sunanMaiSaya').value.trim();
         let kaya = document.getElementById('kayanDaAkaSiyar').value.trim();
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
-        if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren!"); return; }
+        if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let s_date = new Date();
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: s_date.toLocaleString(), dateStr: s_date.toISOString().split('T')[0], isDebitMarked: false };
+        let d = new Date();
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), type: 'Siyarwa' };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
-
-        // Tabbatar akwai file dinsa a customer_files, idan babu a ƙirƙiri shi ta atomatik
-        let fileExists = jerinFayilolinMutane.some(f => f.suna.toLowerCase() === maiSaya.toLowerCase());
-        if(!fileExists) {
-            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: maiSaya }]);
-        }
 
         if (maiSayaDawn) {
             let sabonJimla = maiSayaDawn.kudi + kudi;
@@ -1076,6 +1086,12 @@
             await supabaseClient.from('siyarwa').update({ kudi: sabonJimla, history: sabonHistory }).eq('id', maiSayaDawn.id);
         } else {
             await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: maiSaya, kudi: kudi, history: [detailObj] }]);
+        }
+
+        // Tabbatar akwai file dinsa a customer_files
+        let fileExist = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === maiSaya.toLowerCase());
+        if(!fileExist) {
+            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: maiSaya }]);
         }
 
         document.getElementById('sunanMaiSaya').value = "";
@@ -1089,16 +1105,11 @@
         let suna = document.getElementById('sunanMutum').value.trim();
         let bayaninKaya = document.getElementById('abinDaYaAnsa').value.trim();
         let kudi = parseFloat(document.getElementById('kudinBashi').value);
-        if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren!"); return; }
+        if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let s_date = new Date();
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: s_date.toLocaleString(), dateStr: s_date.toISOString().split('T')[0], isDebitMarked: true };
+        let d = new Date();
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: d.toLocaleString(), dateOnly: d.toLocaleDateString(), type: 'Bashi' };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
-
-        let fileExists = jerinFayilolinMutane.some(f => f.suna.toLowerCase() === suna.toLowerCase());
-        if(!fileExists) {
-            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
-        }
 
         if (mutumDawn) {
             let sabonJimla = mutumDawn.kudi + kudi;
@@ -1108,6 +1119,11 @@
             await supabaseClient.from('basussuka').insert([{ user_id: currentUser.id, suna: suna, kudi: kudi, history: [detailObj] }]);
         }
 
+        let fileExist = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
+        if(!fileExist) {
+            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
+        }
+
         document.getElementById('sunanMutum').value = "";
         document.getElementById('abinDaYaAnsa').value = "";
         document.getElementById('kudinBashi').value = "";
@@ -1115,144 +1131,96 @@
         canzaShafi('sashinTebur');
     }
 
-    async function markDebtAsPaid(customerName, index) {
-        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase() === customerName.toLowerCase());
-        if(!bashiRecord || !bashiRecord.history[index]) return;
-
-        let itemToMove = bashiRecord.history[index];
-        if(!confirm(`Kuna son sanya cewa an biya wannan bashin na ₦${itemToMove.kudi.toLocaleString()} (Kaya: ${itemToMove.kaya}) sannan a mayar da shi sashin siyarwa?`)) return;
-
-        // Cire daga bashi history
-        let updatedBashiHistory = [...bashiRecord.history];
-        updatedBashiHistory.splice(index, 1);
-        let updatedBashiTotal = bashiRecord.kudi - itemToMove.kudi;
-
-        if(updatedBashiTotal <= 0) {
-            await supabaseClient.from('basussuka').delete().eq('id', bashiRecord.id);
-        } else {
-            await supabaseClient.from('basussuka').update({ kudi: updatedBashiTotal, history: updatedBashiHistory }).eq('id', bashiRecord.id);
-        }
-
-        // Ƙara zuwa siyarwa tare da alamar taɓa zama bashi
-        itemToMove.isDebitMarked = true; // alamar ya taɓa zuwa debit box
-        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === customerName.toLowerCase());
-        if(siyarwaRecord) {
-            let updatedSiyarwaTotal = siyarwaRecord.kudi + itemToMove.kudi;
-            let updatedSiyarwaHistory = [...(siyarwaRecord.history || []), itemToMove];
-            await supabaseClient.from('siyarwa').update({ kudi: updatedSiyarwaTotal, history: updatedSiyarwaHistory }).eq('id', siyarwaRecord.id);
-        } else {
-            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: customerName, kudi: itemToMove.kudi, history: [itemToMove] }]);
-        }
-
-        await lodaBayaniDagaSupabase();
-        rufeCustomerFileModal();
-        alert("An yi nasarar canza bashin zuwa siyarwa!");
-    }
-
     function generateCustomerSummary() {
         let keyword = document.getElementById('searchSummaryName').value.trim().toLowerCase();
         let selectedMonth = document.getElementById('filterMonthSelect').value;
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
-        if (keyword === "") { previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; downloadBtn.style.display = "none"; return; }
+
+        if (keyword === "") { 
+            previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; 
+            downloadBtn.style.display = "none"; 
+            return; 
+        }
 
         let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
-        if (!bashiRecord && !siyarwaRecord) { previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; downloadBtn.style.display = "none"; return; }
 
-        let htmlText = `<b>Müşteri:</b> ${keyword.toUpperCase()}<br><hr>`;
-        let totalSum = 0;
+        if (!bashiRecord && !siyarwaRecord) { 
+            previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; 
+            downloadBtn.style.display = "none"; 
+            return; 
+        }
 
-        if (siyarwaRecord && siyarwaRecord.history) {
-            htmlText += `<b>Siyarwa:</b><br>`;
-            siyarwaRecord.history.forEach(h => {
-                let mMatch = h.lokaci ? h.lokaci.includes(`/${selectedMonth}/`) || selectedMonth === 'all' : true;
-                if(mMatch) {
-                    htmlText += `- ${h.kaya} (₦${h.kudi.toLocaleString()}) [${h.lokaci}]<br>`;
-                    totalSum += h.kudi;
+        let customerName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
+        let allHistoryItems = [];
+        if (siyarwaRecord && siyarwaRecord.history) allHistoryItems.push(...siyarwaRecord.history);
+        if (bashiRecord && bashiRecord.history) allHistoryItems.push(...bashiRecord.history);
+
+        // Filter by month if selected
+        if (selectedMonth !== "") {
+            allHistoryItems = allHistoryItems.filter(item => {
+                // item.lokaci misali: "8/4/2026, 12:00:00 PM"
+                let parts = item.dateOnly ? item.dateOnly.split('/') : [];
+                if (parts.length >= 2) {
+                    let m = parts[0].padStart(2, '0');
+                    return m === selectedMonth;
                 }
+                return true;
             });
         }
-        if (bashiRecord && bashiRecord.history) {
-            htmlText += `<br><b>Basussuka:</b><br>`;
-            bashiRecord.history.forEach(h => {
-                let mMatch = h.lokaci ? h.lokaci.includes(`/${selectedMonth}/`) || selectedMonth === 'all' : true;
-                if(mMatch) {
-                    htmlText += `- ${h.kaya} (₦${h.kudi.toLocaleString()}) [${h.lokaci}]<br>`;
-                    totalSum += h.kudi;
-                }
+
+        // Group history items by date
+        let groupedByDate = {};
+        allHistoryItems.forEach(item => {
+            let dt = item.dateOnly || 'Yau';
+            if (!groupedByDate[dt]) groupedByDate[dt] = [];
+            groupedByDate[dt].push(item);
+        });
+
+        let cardHtml = `<div id="summaryPreviewCard">
+            <div>
+                <div class="card-header-title">Tarihin Kasuwanci</div>
+                <div class="card-customer-name">${customerName}</div>
+                <div class="card-date-box">📅 Yau: ${new Date().toLocaleDateString()}</div>
+            </div>
+            <div style="text-align: left; max-height: 380px; overflow-y: auto; padding-right: 5px;">`;
+
+        for (let dt in groupedByDate) {
+            cardHtml += `<div style="background: rgba(0,0,0,0.25); padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; margin: 8px 0; color: #fdcb6e;">📆 Kwanan Wata: ${dt}</div>`;
+            groupedByDate[dt].forEach(act => {
+                let badgeType = act.type === 'Bashi' ? '🔴 Bashi' : '🟢 Siyarwa';
+                let debitTag = act.wasDebit ? ' <small style="background:#d63031; padding:2px 4px; border-radius:4px;">(Taɓa Bashi)</small>' : '';
+                cardHtml += `<div class="card-item-row">
+                    <div><b>${act.kaya}</b>${debitTag}<br><small style="opacity:0.8;">${act.lokaci}</small></div>
+                    <div style="font-weight:bold; color:#00cec9;">₦${Number(act.kudi).toLocaleString()}</div>
+                </div>`;
             });
         }
-        htmlText += `<hr><b>Jimla:</b> ₦${totalSum.toLocaleString()}`;
-        previewBox.innerHTML = htmlText;
+
+        cardHtml += `</div>
+            <div class="card-footer-sirdique">
+                Powered by 
+                <span>S</span><span>i</span><span>r</span><span>d</span><span>i</span><span>q</span><span>u</span><span>e</span>
+            </div>
+        </div>`;
+
+        previewBox.innerHTML = cardHtml;
         downloadBtn.style.display = "block";
     }
 
-    function downloadCustomerSummaryReceipt() {
-        let keyword = document.getElementById('searchSummaryName').value.trim();
-        let selectedMonth = document.getElementById('filterMonthSelect').value;
-        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().toLowerCase() === keyword.toLowerCase());
-        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().toLowerCase() === keyword.toLowerCase());
-
-        let receiptWindow = window.open('', '_blank');
-        let htmlContent = `
-        <!DOCTYPE html>
-        <html lang="ha">
-        <head>
-            <meta charset="UTF-8">
-            <title>Receipt - ${keyword}</title>
-            <style>
-                body { background: #f0f3f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-                .receipt-card { width: 380px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 30px; box-sizing: border-box; border-top: 8px solid #0984e3; text-align: center; }
-                h1 { color: #0984e3; font-size: 22px; margin-bottom: 5px; }
-                .customer-title { font-size: 18px; font-weight: bold; color: #2d3436; margin-bottom: 20px; border-bottom: 2px dashed #dfe6e9; padding-bottom: 10px; }
-                .date-box { background: #f1f2f6; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; color: #636e72; margin-bottom: 12px; text-align: left; }
-                .item-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; border-bottom: 1px solid #f8f9fa; padding-bottom: 4px; text-align: left; }
-                .total-box { font-size: 18px; font-weight: bold; color: #00b894; margin-top: 20px; border-top: 2px solid #0984e3; padding-top: 10px; }
-                .footer { margin-top: 25px; font-size: 12px; color: #b2bec3; font-weight: 600; }
-            </style>
-        </head>
-        <body>
-            <div class="receipt-card">
-                <h1>TARIHIN KASUWANCI</h1>
-                <div class="customer-title">👤 ${keyword.toUpperCase()}</div>
-        `;
-
-        let groupedData = {};
-        let totalAll = 0;
-
-        let processItems = (items) => {
-            if(!items) return;
-            items.forEach(i => {
-                let dStr = i.dateStr || 'Other Date';
-                if(selectedMonth === 'all' || (i.lokaci && i.lokaci.includes(`/${selectedMonth}/`))) {
-                    if(!groupedData[dStr]) groupedData[dStr] = [];
-                    groupedData[dStr].push(i);
-                    totalAll += i.kudi;
-                }
-            });
-        };
-
-        if(siyarwaRecord) processItems(siyarwaRecord.history);
-        if(bashiRecord) processItems(bashiRecord.history);
-
-        for (let dateKey in groupedData) {
-            htmlContent += `<div class="date-box">📅 ${dateKey}</div>`;
-            groupedData[dateKey].forEach(itm => {
-                let badge = itm.isDebitMarked ? ' <span style="color:var(--danger-color); font-size:10px;">(Debit)</span>' : '';
-                htmlContent += `<div class="item-row"><span>${itm.kaya}${badge}</span> <b>₦${itm.kudi.toLocaleString()}</b></div>`;
-            });
-        }
-
-        htmlContent += `
-                <div class="total-box">Jimla: ₦${totalAll.toLocaleString()}</div>
-                <div class="footer">Powered by Sirdique</div>
-            </div>
-        </body>
-        </html>`;
-
-        receiptWindow.document.write(htmlContent);
-        receiptWindow.document.close();
+    async function downloadCustomerSummaryCard() {
+        let cardElement = document.getElementById('summaryPreviewCard');
+        if (!cardElement) return;
+        
+        let canvas = await html2canvas(cardElement, { scale: 2, useCORS: true });
+        let image = canvas.toDataURL("image/png");
+        let a = document.createElement('a');
+        a.href = image;
+        a.download = `Sirdique-Summary-Card.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
     }
 
     let calcExpressionStr = "";
@@ -1293,57 +1261,98 @@
         jerinFayilolinMutane.forEach((item) => {
             let card = document.createElement('div');
             card.className = 'file-card-box';
-            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div><span style="font-size:12px; color:#636e72;">Danna don dubawa ➔</span>`;
-            card.onclick = () => budeCustomerOptions(item.suna);
+            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div><button onclick="budeCikakkenFayil('${item.suna}')" style="background:var(--primary-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">Duba Fayil</button>`;
             container.appendChild(card);
         });
     }
 
-    function budeCustomerOptions(suna) {
+    async function budeCikakkenFayil(suna) {
         currentSelectedCustomer = suna;
-        document.getElementById('optModalCustomerName').innerText = `Bayanan: ${suna}`;
-        document.getElementById('customerOptionsModal').classList.add('active-modal');
-    }
-    function rufeCustomerOptionsModal() { document.getElementById('customerOptionsModal').classList.remove('active-modal'); }
+        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
+        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
 
-    function budeZaɓiFayil(type) {
-        rufeCustomerOptionsModal();
-        let suna = currentSelectedCustomer;
-        let bashiData = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
-        let siyarwaData = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
-        
-        document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
-        let contentHtml = "";
+        document.getElementById('customerFileTitle').innerText = `Fayil ɗin: ${suna}`;
+        let contentHtml = `<div style="margin-bottom:10px; font-weight:bold;">Jimillar Bashi: <span style="color:var(--danger-color);">₦${bashiRecord ? bashiRecord.kudi.toLocaleString() : 0}</span></div>`;
+        contentHtml += `<div style="margin-bottom:15px; font-weight:bold;">Jimillar Siyarwa: <span style="color:var(--success-color);">₦${siyarwaRecord ? siyarwaRecord.kudi.toLocaleString() : 0}</span></div>`;
 
-        if(type === 'Siyarwa' || type === 'All') {
-            contentHtml += `<h4>🛒 Siyar da Kaya:</h4>`;
-            if(siyarwaData && siyarwaData.history) {
-                siyarwaData.history.forEach(h => {
-                    let markBadge = h.isDebitMarked ? ' <span style="color:var(--danger-color); font-weight:bold;">(Ya taɓa zama Bashi)</span>' : '';
-                    contentHtml += `<div style="border-bottom:1px solid #ddd; padding:6px 0;"><b>Kaya:</b> ${h.kaya}${markBadge}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()}<br><span style="font-size:11px; color:#636e72;">${h.lokaci}</span></div>`;
-                });
-            } else { contentHtml += `<p>Babu bayanan siyarwa.</p>`; }
-        }
+        contentHtml += `<h4 style="border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:10px;">Tarihi (History & Notes):</h4>`;
 
-        if(type === 'Bashi' || type === 'All') {
-            contentHtml += `<h4 style="margin-top:15px;">📝 Basussuka:</h4>`;
-            if(bashiData && bashiData.history) {
-                bashiData.history.forEach((h, idx) => {
-                    contentHtml += `<div style="border-bottom:1px solid #ddd; padding:6px 0;"><b>Kaya:</b> ${h.kaya}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()}<br><span style="font-size:11px; color:#636e72;">${h.lokaci}</span><br><button onclick="markDebtAsPaid('${suna}', ${idx})" style="background:var(--success-color); color:white; border:none; padding:4px 8px; border-radius:4px; margin-top:4px; cursor:pointer; font-weight:bold;">Mark as Paid (Biya)</button></div>`;
-                });
-            } else { contentHtml += `<p>Babu bashi.</p>`; }
+        let combinedHistory = [];
+        if(bashiRecord && bashiRecord.history) combinedHistory.push(...bashiRecord.history.map(h => ({...h, category: 'Bashi', recordId: bashiRecord.id})));
+        if(siyarwaRecord && siyarwaRecord.history) combinedHistory.push(...siyarwaRecord.history.map(h => ({...h, category: 'Siyarwa', recordId: siyarwaRecord.id})));
+
+        if(combinedHistory.length === 0) {
+            contentHtml += `<p>Babu wani tarihi a cikin wannan fayil ɗin.</p>`;
+        } else {
+            combinedHistory.forEach((item, index) => {
+                let markPaidBtn = item.category === 'Bashi' ? 
+                    `<button onclick="canzaBashiYaZamaSiyarwa('${suna}', ${index})" style="background:var(--success-color); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-top:5px;">Mark as Paid (Mika Siyarwa)</button>` : ``;
+                
+                contentHtml += `<div style="background:white; border:1px solid #dfe6e9; padding:8px; border-radius:6px; margin-bottom:8px;">
+                    <div><b>Rukuni:</b> ${item.category} ${item.wasDebit ? '<span style="color:var(--danger-color); font-size:10px;">(Taɓa Bashi)</span>' : ''}</div>
+                    <div><b>Kaya/Bayani:</b> ${item.kaya}</div>
+                    <div><b>Kuɗi:</b> ₦${Number(item.kudi).toLocaleString()}</div>
+                    <div style="font-size:11px; color:#636e72;"><b>Lokaci:</b> ${item.lokaci}</div>
+                    ${markPaidBtn}
+                </div>`;
+            });
         }
 
         document.getElementById('customerFileContent').innerHTML = contentHtml;
         document.getElementById('customerFileModal').classList.add('active-modal');
     }
+
     function rufeCustomerFileModal() { document.getElementById('customerFileModal').classList.remove('active-modal'); }
+
+    async function canzaBashiYaZamaSiyarwa(suna, historyIndex) {
+        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
+        if (!bashiRecord) return;
+
+        let itemToMove = bashiRecord.history[historyIndex];
+        itemToMove.wasDebit = true; // Alamar cewa ya taɓa zama bashi
+
+        // Cire daga Bashi history da rage kudi
+        let sabonBashiHistory = [...bashiRecord.history];
+        sabonBashiHistory.splice(historyIndex, 1);
+        let sabonJimlaBashi = bashiRecord.kudi - itemToMove.kudi;
+
+        await supabaseClient.from('basussuka').update({ kudi: sabonJimlaBashi, history: sabonBashiHistory }).eq('id', bashiRecord.id);
+
+        // Ƙara zuwa Siyarwa
+        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
+        if (siyarwaRecord) {
+            let sabonJimlaSiyarwa = siyarwaRecord.kudi + itemToMove.kudi;
+            let sabonSiyarwaHistory = [...(siyarwaRecord.history || []), itemToMove];
+            await supabaseClient.from('siyarwa').update({ kudi: sabonJimlaSiyarwa, history: sabonSiyarwaHistory }).eq('id', siyarwaRecord.id);
+        } else {
+            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: suna, kudi: itemToMove.kudi, history: [itemToMove] }]);
+        }
+
+        alert("An yi nasarar sauya bashin zuwa biyan kaya (Siyarwa)!");
+        rufeCustomerFileModal();
+        await lodaBayaniDagaSupabase();
+        budeCikakkenFayil(suna);
+    }
+
+    async function gogeFayilMutum() {
+        if(!currentSelectedCustomer) return;
+        if(!confirm(`Shin kana son goge fayil ɗin "${currentSelectedCustomer}"? (Tarihin sa zai cigaba da kasancewa a teburin siyarwa da bashi).`)) return;
+
+        let fileObj = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === currentSelectedCustomer.toLowerCase());
+        if(fileObj) {
+            await supabaseClient.from('customer_files').delete().eq('id', fileObj.id);
+        }
+        alert("An goge fayil ɗin cikin nasara!");
+        rufeCustomerFileModal();
+        await lodaBayaniDagaSupabase();
+        nunaJerinSunayenFiles();
+    }
 
     function nunaTebur() {
         const tebur = document.getElementById('teburinBashi');
         tebur.innerHTML = "";
         jerinBasussuka.forEach((mutum) => {
-            tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCustomerOptions('${mutum.suna}')">${mutum.suna}</span></td><td>₦${mutum.kudi.toLocaleString()}</td></tr>`;
+            tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCikakkenFayil('${mutum.suna}')">${mutum.suna}</span></td><td>₦${mutum.kudi.toLocaleString()}</td></tr>`;
         });
     }
 
@@ -1351,7 +1360,7 @@
         const tebur = document.getElementById('teburinSiyarwa');
         tebur.innerHTML = "";
         jerinSiyarwa.forEach((item) => {
-            tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCustomerOptions('${item.maiSaya}')">${item.maiSaya}</span></td><td>₦${item.kudi.toLocaleString()}</td></tr>`;
+            tebur.innerHTML += `<tr><td><span class="clickable-name" onclick="budeCikakkenFayil('${item.maiSaya}')">${item.maiSaya}</span></td><td>₦${item.kudi.toLocaleString()}</td></tr>`;
         });
     }
 
