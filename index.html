@@ -382,6 +382,9 @@
             border-radius: 10px;
             margin-bottom: 12px;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .file-card-title { font-weight: bold; color: var(--primary-color); font-size: 16px; }
 
@@ -406,8 +409,10 @@
         }
         .modal.active-modal { display: flex; }
         .modal-content {
-            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px;
+            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+            max-height: 85vh;
+            overflow-y: auto;
         }
         .close-btn { background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
@@ -464,7 +469,9 @@
         <div class="sidebar rufe" id="mySidebar">
             <div>
                 <h2>Sarrafa Kasuwanci</h2>
-                <ul class="menu-list" id="sidebarMenuList"></ul>
+                <ul class="menu-list" id="sidebarMenuList">
+                    <!-- Za a cika su ta code dangane da ko admin ne ko akasin haka -->
+                </ul>
             </div>
             <div class="clock-box">
                 <p id="lokaciYanzu">Ana ɗaukar lokaci...</p>
@@ -567,7 +574,7 @@
                     <div id="summaryPreviewBox" style="background: #f9f9f9; border: 1px solid #dfe6e9; padding: 12px; border-radius: 8px; font-size: 13px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
                         <i>Babu sunan da aka rubuta tukuna...</i>
                     </div>
-                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Summary (TXT)</button>
+                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Professional Summary (TXT)</button>
                 </div>
             </div>
 
@@ -735,7 +742,8 @@
             <h3 id="optModalCustomerName" style="color: var(--primary-color); margin-top: 0;"></h3>
             <button class="btn-voice" style="background: var(--accent-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Siyarwa')">🛒 Bayanan Siyar da Kaya</button>
             <button class="btn-voice" style="background: var(--warning-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Bashi')">📝 Bayanan Bashi</button>
-            <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Dukansu Tare (All)</button>
+            <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Cikakken Tarihi (All Items)</button>
+            <button onclick="gogeFayilMutum()" style="background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">🗑️ Goge Wannan Fayil ɗin</button>
             <button class="close-btn" onclick="rufeCustomerOptionsModal()">Rufe</button>
         </div>
     </div>
@@ -797,7 +805,7 @@
                 currentUser = data.user;
                 let suspended = await dubaKoAnYiSuspend(currentUser.id);
                 if(suspended) {
-                    alert("⚠️ Ƙishirwa! An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
+                    alert("⚠️ An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
                     await supabaseClient.auth.signOut();
                     currentUser = null;
                     return;
@@ -809,8 +817,8 @@
 
     async function dubaKoAnYiSuspend(userId) {
         if(userId === '') return false;
-        let { data } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
-        if(data && data.status === 'suspended') return true;
+        let { data, error } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
+        if(data && data.status === 'suspended') { return true; }
         return false;
     }
 
@@ -908,7 +916,7 @@
 
         let totalSalesVal = allSiyarwa ? allSiyarwa.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
         let totalDebtsVal = allBasussuka ? allBasussuka.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
-        let uniqueUsersCount = allProfiles ? allProfiles.length : (allFiles ? new Set(allFiles.map(f => f.user_id)).size : 0);
+        let uniqueUsersCount = allProfiles ? allProfiles.length : 0;
 
         document.getElementById('adminTotalUsers').innerText = uniqueUsersCount;
         document.getElementById('adminTotalSales').innerText = '₦' + totalSalesVal.toLocaleString();
@@ -927,7 +935,7 @@
 
     async function canzaUserStatus(userId, sabonStatus) {
         let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
-        if(!error) { alert(`An yi nasarar sa account ya zama ${sabonStatus}!`); lodaBayananAdmin(); }
+        if(error) { alert("Kuskure: " + error.message); } else { alert(`An canza status zuwa ${sabonStatus}!`); lodaBayananAdmin(); }
     }
 
     function faraAgogo() {
@@ -953,7 +961,7 @@
     function canzaShafi(shafiId) {
         if(isAdmin && shafiId !== 'sashinAdminDashboard') { alert("Kai Admin ne!"); return; }
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        let zabiShafi = document.getElementById(shafiId);
+        const zabiShafi = document.getElementById(shafiId);
         if (zabiShafi) {
             zabiShafi.classList.add('active');
             if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
@@ -978,7 +986,7 @@
 
     function faraMoriSiyarwa() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
+        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -987,7 +995,7 @@
 
     function faraMoriBashi() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
+        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -1000,9 +1008,6 @@
     async function lodaBayaniDagaSupabase() {
         if(!currentUser || isAdmin) return;
         
-        let suspended = await dubaKoAnYiSuspend(currentUser.id);
-        if(suspended) { await fitaDagaAccount(); return; }
-
         let { data: files } = await supabaseClient.from('customer_files').select('*').eq('user_id', currentUser.id);
         if(files) jerinFayilolinMutane = files.map(f => ({ id: f.id, suna: f.suna }));
 
@@ -1032,7 +1037,7 @@
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString(), fromDebit: false };
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString(), status: 'paid' };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
 
         if (maiSayaDawn) {
@@ -1056,7 +1061,7 @@
         let kudi = parseFloat(document.getElementById('kudinBashi').value);
         if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: new Date().toLocaleString() };
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: new Date().toLocaleString(), status: 'debt' };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
 
         if (mutumDawn) {
@@ -1074,46 +1079,57 @@
         canzaShafi('sashinTebur');
     }
 
-    // 🌟 AIKIN MARK AS PAID (BIYA BASHI) DAGA FILE
-    async function markBashiAsPaid(bashiId, index) {
-        let bashiRecord = jerinBasussuka.find(b => b.id === bashiId);
+    // MARK DEBT AS PAID FEATURE
+    async function markDebtAsPaid(customerName, index) {
+        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase() === customerName.toLowerCase());
         if(!bashiRecord) return;
 
-        let itemToMove = bashiRecord.history[index];
-        if(!itemToMove) return;
+        let itemToPay = bashiRecord.history[index];
+        if(!itemToPay) return;
 
-        // Cire shi daga bashi history
-        let updatedBashiHistory = bashiRecord.history.filter((_, i) => i !== index);
-        let updatedBashiTotal = bashiRecord.kudi - itemToMove.kudi;
+        if(!confirm(`Shin kana tabbatar da cewa wannan mutumin ya biya bashin na ₦${itemToPay.kudi.toLocaleString()} (${itemToPay.kaya})?`)) return;
 
-        // Sabunta ko goge bashi record idan ya zama zero
-        if(updatedBashiTotal <= 0) {
-            await supabaseClient.from('basussuka').delete().eq('id', bashiId);
+        // 1. Update Bashi Record (Reduce total and mark history item status)
+        let updatedBashiHistory = [...bashiRecord.history];
+        updatedBashiHistory[index].status = 'paid_from_debt';
+        let newBashiTotal = bashiRecord.kudi - itemToPay.kudi;
+
+        if(newBashiTotal <= 0) {
+            await supabaseClient.from('basussuka').delete().eq('id', bashiRecord.id);
         } else {
-            await supabaseClient.from('basussuka').update({ kudi: updatedBashiTotal, history: updatedBashiHistory }).eq('id', bashiId);
+            await supabaseClient.from('basussuka').update({ kudi: newBashiTotal, history: updatedBashiHistory }).eq('id', bashiRecord.id);
         }
 
-        // Tura shi zuwa siyarwa tare da alamar cewa ya taba zama bashi (fromDebit: true)
-        let paidDetailObj = { 
-            kaya: `${itemToMove.kaya} (An biya daga bashi)`, 
-            kudi: itemToMove.kudi, 
-            lokaci: `${new Date().toLocaleString()} (Biya: ${itemToMove.lokaci})`, 
-            fromDebit: true 
-        };
+        // 2. Add to Siyarwa Record
+        let maiSayaDawn = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === customerName.toLowerCase());
+        let paidDetailObj = { kaya: `${itemToPay.kaya} (An biya daga tsohon bashi)`, kudi: itemToPay.kudi, lokaci: new Date().toLocaleString(), status: 'cleared_debt' };
 
-        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === bashiRecord.suna.toLowerCase());
-        if(siyarwaRecord) {
-            let sabonSiyarwaTotal = siyarwaRecord.kudi + itemToMove.kudi;
-            let sabonSiyarwaHistory = [...(siyarwaRecord.history || []), paidDetailObj];
-            await supabaseClient.from('siyarwa').update({ kudi: sabonSiyarwaTotal, history: sabonSiyarwaHistory }).eq('id', siyarwaRecord.id);
+        if(maiSayaDawn) {
+            let sabonJimlaSiyarwa = maiSayaDawn.kudi + itemToPay.kudi;
+            let sabonHistorySiyarwa = [...(maiSayaDawn.history || []), paidDetailObj];
+            await supabaseClient.from('siyarwa').update({ kudi: sabonJimlaSiyarwa, history: sabonHistorySiyarwa }).eq('id', maiSayaDawn.id);
         } else {
-            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: bashiRecord.suna, kudi: itemToMove.kudi, history: [paidDetailObj] }]);
+            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: customerName, kudi: itemToPay.kudi, history: [paidDetailObj] }]);
         }
 
-        alert("An yi nasarar sauya kudin zuwa shashin siyarwa (An biya bashi)!");
+        alert("An yi nasarar sauya bashi zuwa biya (Paid) nan take!");
         rufeCustomerFileModal();
         await lodaBayaniDagaSupabase();
-        budeCustomerOptions(bashiRecord.suna);
+    }
+
+    // DELETE CUSTOMER FILE
+    async function gogeFayilMutum() {
+        let suna = currentSelectedCustomer;
+        if(!confirm(`Shin kana son goge fayil din "${suna}"? (Lura: Tarihin siyarwa da bashi a cikin tebur ba za su gogu ba, fayil ɗinsa kawai zai gogu).`)) return;
+
+        let fileObj = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
+        if(fileObj) {
+            await supabaseClient.from('customer_files').delete().eq('id', fileObj.id);
+        }
+        rufeCustomerOptionsModal();
+        alert("An goge fayil ɗin cikin nasara!");
+        await lodaBayaniDagaSupabase();
+        nunaJerinSunayenFiles();
     }
 
     function generateCustomerSummary() {
@@ -1126,15 +1142,37 @@
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
         if (!bashiRecord && !siyarwaRecord) { previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; downloadBtn.style.display = "none"; return; }
 
-        let summaryText = `===== SUMMARY =====\n`, htmlText = ``;
-        if (siyarwaRecord) {
-            summaryText += `MAI SAYA: ${siyarwaRecord.maiSaya}\nJimla: ₦${siyarwaRecord.kudi.toLocaleString()}\n`;
-            htmlText += `<b>Mai Saya:</b> ${siyarwaRecord.maiSaya}<br><b>Jimla:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br>`;
+        let custName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
+
+        let summaryText = `═══════════════════════════\n   MAULANA / KASUWANCI SUMMARY   \n═══════════════════════════\n`;
+        summaryText += `SUNAN ABOKIN CINIKI: ${custName}\nKwanan Wata: ${new Date().toLocaleDateString()}\n-------------------------------------------\n\n`;
+        
+        let htmlText = `<div style="border-bottom:2px solid #6c5ce7; padding-bottom:8px; margin-bottom:10px;"><h3 style="margin:0; color:#6c5ce7;">📌 ABOKIN CINIKI: ${custName}</h3></div>`;
+
+        if (siyarwaRecord && siyarwaRecord.history) {
+            summaryText += `[+] SASHEN SIYAR DA KAYA:\n`;
+            htmlText += `<b style="color:var(--success-color);">🛒 Sashen Siyar da Kaya:</b><ul style="margin:5px 0 15px 20px; padding:0;">`;
+            siyarwaRecord.history.forEach(h => {
+                summaryText += ` - ${h.kaya} | ₦${h.kudi.toLocaleString()} (${h.lokaci})\n`;
+                htmlText += `<li><b>${h.kaya}</b> - ₦${h.kudi.toLocaleString()} <span style="font-size:11px; color:#636e72;">(${h.lokaci})</span></li>`;
+            });
+            summaryText += `Jimillar Siyarwa: ₦${siyarwaRecord.kudi.toLocaleString()}\n\n`;
+            htmlText += `</ul><b>Jimillar Siyarwa:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br><hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">`;
         }
-        if (bashiRecord) {
-            summaryText += `MAI BASHI: ${bashiRecord.suna}\nBashi: ₦${bashiRecord.kudi.toLocaleString()}\n`;
-            htmlText += `<hr><b>Bashi:</b> ${bashiRecord.suna} (₦${bashiRecord.kudi.toLocaleString()})<br>`;
+
+        if (bashiRecord && bashiRecord.history) {
+            summaryText += `[+] SASHEN BASUSSUKA:\n`;
+            htmlText += `<b style="color:var(--danger-color);">📝 Sashen Basussuka:</b><ul style="margin:5px 0 10px 20px; padding:0;">`;
+            bashiRecord.history.forEach(h => {
+                summaryText += ` - ${h.kaya} | ₦${h.kudi.toLocaleString()} (${h.lokaci})\n`;
+                htmlText += `<li><b>${h.kaya}</b> - ₦${h.kudi.toLocaleString()} <span style="font-size:11px; color:#636e72;">(${h.lokaci})</span></li>`;
+            });
+            summaryText += `Jimillar Bashi: ₦${bashiRecord.kudi.toLocaleString()}\n\n`;
+            htmlText += `</ul><b>Jimillar Bashi:</b> ₦${bashiRecord.kudi.toLocaleString()}<br>`;
         }
+
+        summaryText += `═══════════════════════════\n   Nagode da Zabi Na Mu!   \n═══════════════════════════`;
+
         previewBox.innerHTML = htmlText;
         downloadBtn.style.display = "block";
         window.currentGeneratedSummaryText = summaryText;
@@ -1144,7 +1182,7 @@
         if (!window.currentGeneratedSummaryText) return;
         let blob = new Blob([window.currentGeneratedSummaryText], { type: 'text/plain;charset=utf-8' });
         let url = URL.createObjectURL(blob);
-        let a = document.createElement('a'); a.href = url; a.download = `Summary.txt`;
+        let a = document.createElement('a'); a.href = url; a.download = `Customer_Summary.txt`;
         document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
@@ -1186,7 +1224,7 @@
         jerinFayilolinMutane.forEach((item) => {
             let card = document.createElement('div');
             card.className = 'file-card-box';
-            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div>`;
+            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div> <span style="font-size:12px; color:var(--primary-color); font-weight:bold;">Dubawa ➔</span>`;
             card.onclick = () => budeCustomerOptions(item.suna);
             container.appendChild(card);
         });
@@ -1199,7 +1237,6 @@
     }
     function rufeCustomerOptionsModal() { document.getElementById('customerOptionsModal').classList.remove('active-modal'); }
 
-    // 🌟 WANNAN SHI NE WAJEN DA AKA GYARA DOMIN NUNA DUK BAYANAN SEYAYYA DAYA BAYAN DAYA DA NOTES DA DATE/TIME
     function budeZaɓiFayil(type) {
         rufeCustomerOptionsModal();
         let suna = currentSelectedCustomer;
@@ -1207,45 +1244,40 @@
         let siyarwaData = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
         
         document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
-        let htmlContent = "";
+        let contentHtml = "";
 
-        // 1. Siyarwa History
-        if(type === 'Siyarwa' || type === 'All') {
-            htmlContent += `<h4 style="color:var(--success-color); border-bottom:1px solid #ccc; padding-bottom:4px;">🛒 Siyar da Kaya</h4>`;
-            if(siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
-                htmlContent += `<b>Jimla: ₦${siyarwaData.kudi.toLocaleString()}</b><ul style="padding-left:18px; margin-top:5px;">`;
+        if (type === 'Siyarwa' || type === 'All') {
+            contentHtml += `<b style="color:var(--success-color);">🛒 Siyar da Kaya:</b>`;
+            if (siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
+                contentHtml += `<ul style="margin:5px 0 15px 15px; padding:0;">`;
                 siyarwaData.history.forEach(h => {
-                    let badge = h.fromDebit ? `<span style="background:var(--warning-color); color:#2d3436; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:bold;">Tsohon Bashi (An Biya)</span><br>` : '';
-                    htmlContent += `<li style="margin-bottom:8px;">${badge}<b>₦${h.kudi.toLocaleString()}</b> - ${h.kaya}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span></li>`;
+                    let badge = h.status === 'cleared_debt' ? `<span style="background:#00cec9; color:white; padding:2px 6px; border-radius:4px; font-size:10px;">(Tsohon Bashi da aka biya)</span>` : ``;
+                    contentHtml += `<li style="margin-bottom:6px;"><b>Kaya:</b> ${h.kaya}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()} ${badge}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span></li><hr style="border:0; border-top:1px solid #eee;">`;
                 });
-                htmlContent += `</ul>`;
+                contentHtml += `</ul><b>Jimillar Kuɗi: ₦${siyarwaData.kudi.toLocaleString()}</b>`;
             } else {
-                htmlContent += `<p style="font-size:12px; color:#636e72;">Babu bayanin siyarwa.</p>`;
+                contentHtml += `<p style="color:#636e72; font-style:italic;">Babu bayanin siyarwa.</p>`;
             }
         }
 
-        // 2. Bashi History (Tare da maɓallin Mark as Paid)
-        if(type === 'Bashi' || type === 'All') {
-            htmlContent += `<h4 style="color:var(--danger-color); border-bottom:1px solid #ccc; padding-bottom:4px; margin-top:15px;">📝 Basussuka</h4>`;
-            if(bashiData && bashiData.history && bashiData.history.length > 0) {
-                htmlContent += `<b>Jimlar Bashi: ₦${bashiData.kudi.toLocaleString()}</b><ul style="padding-left:18px; margin-top:5px;">`;
+        if (type === 'Bashi' || type === 'All') {
+            if(type === 'All') contentHtml += `<hr style="margin:15px 0; border-top:2px solid #ddd;">`;
+            contentHtml += `<b style="color:var(--danger-color);">📝 Basussuka:</b>`;
+            if (bashiData && bashiData.history && bashiData.history.length > 0) {
+                contentHtml += `<ul style="margin:5px 0 15px 15px; padding:0;">`;
                 bashiData.history.forEach((h, index) => {
-                    htmlContent += `<li style="margin-bottom:12px; background:#fff; padding:8px; border:1px solid #e1e1e1; border-radius:6px;">
-                        <b>₦${h.kudi.toLocaleString()}</b> - ${h.kaya}<br>
-                        <span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span><br>
-                        <button onclick="markBashiAsPaid('${bashiData.id}', ${index})" style="background:var(--success-color); color:white; border:none; padding:4px 8px; font-size:11px; border-radius:4px; cursor:pointer; margin-top:5px; font-weight:bold;">✔ Mark as Paid (Biya)</button>
-                    </li>`;
+                    let payBtn = h.status !== 'paid_from_debt' ? `<br><button onclick="markDebtAsPaid('${suna}', ${index})" style="background:var(--success-color); color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px; margin-top:4px;">✔ Mark as Paid (Biya)</button>` : `<br><span style="color:var(--success-color); font-weight:bold; font-size:11px;">✔ An riga an biya</span>`;
+                    contentHtml += `<li style="margin-bottom:8px;"><b>Bayani:</b> ${h.kaya}<br><b>Bashi:</b> ₦${h.kudi.toLocaleString()}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span>${payBtn}</li><hr style="border:0; border-top:1px solid #eee;">`;
                 });
-                htmlContent += `</ul>`;
+                contentHtml += `</ul><b>Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}</b>`;
             } else {
-                htmlContent += `<p style="font-size:12px; color:#636e72;">Babu wani bashi a kansa.</p>`;
+                contentHtml += `<p style="color:#636e72; font-style:italic;">Babu basussuka a yanzu.</p>`;
             }
         }
 
-        document.getElementById('customerFileContent').innerHTML = htmlContent;
+        document.getElementById('customerFileContent').innerHTML = contentHtml;
         document.getElementById('customerFileModal').classList.add('active-modal');
     }
-
     function rufeCustomerFileModal() { document.getElementById('customerFileModal').classList.remove('active-modal'); }
 
     function nunaTebur() {
