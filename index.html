@@ -406,7 +406,7 @@
         }
         .modal.active-modal { display: flex; }
         .modal-content {
-            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px;
+            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
         }
         .close-btn { background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
@@ -464,9 +464,7 @@
         <div class="sidebar rufe" id="mySidebar">
             <div>
                 <h2>Sarrafa Kasuwanci</h2>
-                <ul class="menu-list" id="sidebarMenuList">
-                    <!-- Za a cika su ta code dangane da ko admin ne ko akasin haka -->
-                </ul>
+                <ul class="menu-list" id="sidebarMenuList"></ul>
             </div>
             <div class="clock-box">
                 <p id="lokaciYanzu">Ana ɗaukar lokaci...</p>
@@ -526,7 +524,7 @@
                         <button class="btn-voice" onclick="faraMoriSiyarwa()">🎙 Yi Magana (Murya)</button>
                     </div>
                     <div class="form-group">
-                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani (Note):</label>
+                        <label for="kayanDaAkaSiyar">Sunan Kaya / Bayani:</label>
                         <textarea id="kayanDaAkaSiyar" placeholder="Misali: Sabulu guda 2..."></textarea>
                     </div>
                     <div class="form-group">
@@ -547,7 +545,7 @@
                         <button class="btn-voice" onclick="faraMoriBashi()">🎙 Yi Magana (Murya)</button>
                     </div>
                     <div class="form-group">
-                        <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya/Note):</label>
+                        <label for="abinDaYaAnsa">Abin da ya Ansa (Kaya ko Dalili):</label>
                         <textarea id="abinDaYaAnsa" placeholder="Misali: Shinkafa..."></textarea>
                     </div>
                     <div class="form-group">
@@ -743,7 +741,7 @@
     </div>
 
     <div class="modal" id="customerFileModal">
-        <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-content">
             <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0;">Cikakken Tarihi</h3>
             <div id="customerFileContent" style="font-size: 13px; max-height: 320px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
             <button class="close-btn" onclick="rufeCustomerFileModal()">Rufe</button>
@@ -755,7 +753,6 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_2VXQlOWBCQlXiaB_MwbJFg_Y-zAxVtj';
     
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const ADMIN_EMAIL = 'abubakarsadeeq8533@gmail.com';
 
     let isSignUpMode = false;
@@ -812,10 +809,8 @@
 
     async function dubaKoAnYiSuspend(userId) {
         if(userId === '') return false;
-        let { data, error } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
-        if(data && data.status === 'suspended') {
-            return true;
-        }
+        let { data } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
+        if(data && data.status === 'suspended') return true;
         return false;
     }
 
@@ -840,7 +835,6 @@
 
     async function budeDashboard() {
         if(!currentUser) return;
-        
         isAdmin = (currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 
         let suspended = await dubaKoAnYiSuspend(currentUser.id);
@@ -907,7 +901,6 @@
 
     async function lodaBayananAdmin() {
         if(!isAdmin) return;
-        
         let { data: allFiles } = await supabaseClient.from('customer_files').select('*');
         let { data: allSiyarwa } = await supabaseClient.from('siyarwa').select('*');
         let { data: allBasussuka } = await supabaseClient.from('basussuka').select('*');
@@ -915,7 +908,6 @@
 
         let totalSalesVal = allSiyarwa ? allSiyarwa.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
         let totalDebtsVal = allBasussuka ? allBasussuka.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
-        
         let uniqueUsersCount = allProfiles ? allProfiles.length : (allFiles ? new Set(allFiles.map(f => f.user_id)).size : 0);
 
         document.getElementById('adminTotalUsers').innerText = uniqueUsersCount;
@@ -924,36 +916,18 @@
 
         let usersTable = document.getElementById('adminUsersTableBody');
         usersTable.innerHTML = "";
-        
         if(allProfiles && allProfiles.length > 0) {
             allProfiles.forEach(p => {
-                let statusBadge = p.status === 'suspended' ? 
-                    `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : 
-                    `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
-                
-                let actionBtn = p.status === 'suspended' ? 
-                    `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : 
-                    `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
-
-                usersTable.innerHTML += `<tr>
-                    <td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td>
-                    <td>${statusBadge}</td>
-                    <td>${actionBtn}</td>
-                </tr>`;
+                let statusBadge = p.status === 'suspended' ? `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
+                let actionBtn = p.status === 'suspended' ? `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+                usersTable.innerHTML += `<tr><td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td><td>${statusBadge}</td><td>${actionBtn}</td></tr>`;
             });
-        } else {
-            usersTable.innerHTML = `<tr><td colspan="3" style="text-align:center;">Babu bayanan profiles a halin yanzu.</td></tr>`;
         }
     }
 
     async function canzaUserStatus(userId, sabonStatus) {
         let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
-        if(error) {
-            alert("Kuskure wajen canja status: " + error.message);
-        } else {
-            alert(`An yi nasarar sa account ɗin ya zama ${sabonStatus} nan take!`);
-            lodaBayananAdmin();
-        }
+        if(!error) { alert(`An yi nasarar sa account ya zama ${sabonStatus}!`); lodaBayananAdmin(); }
     }
 
     function faraAgogo() {
@@ -977,12 +951,9 @@
     });
 
     function canzaShafi(shafiId) {
-        if(isAdmin && shafiId !== 'sashinAdminDashboard') {
-            alert("Kai Admin ne! Ba za ka iya shiga wannan sashin ba.");
-            return;
-        }
+        if(isAdmin && shafiId !== 'sashinAdminDashboard') { alert("Kai Admin ne!"); return; }
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        const zabiShafi = document.getElementById(shafiId);
+        let zabiShafi = document.getElementById(shafiId);
         if (zabiShafi) {
             zabiShafi.classList.add('active');
             if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
@@ -1007,7 +978,7 @@
 
     function faraMoriSiyarwa() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
+        if (!SpeechRecognition) return;
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -1016,7 +987,7 @@
 
     function faraMoriBashi() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert("Burauzarka ba ta goyan bayan murya ba."); return; }
+        if (!SpeechRecognition) return;
         const recognition = new SpeechRecognition();
         recognition.lang = 'ha-NG';
         recognition.start();
@@ -1030,11 +1001,7 @@
         if(!currentUser || isAdmin) return;
         
         let suspended = await dubaKoAnYiSuspend(currentUser.id);
-        if(suspended) {
-            alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
-            await fitaDagaAccount();
-            return;
-        }
+        if(suspended) { await fitaDagaAccount(); return; }
 
         let { data: files } = await supabaseClient.from('customer_files').select('*').eq('user_id', currentUser.id);
         if(files) jerinFayilolinMutane = files.map(f => ({ id: f.id, suna: f.suna }));
@@ -1052,8 +1019,7 @@
     async function ajiyeSabonFileTsantsa() {
         let suna = document.getElementById('newFileCustomerName').value.trim();
         if (suna === "") { alert("Don Allah rubuta sunan abokin ciniki!"); return; }
-        let { error } = await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
-        if(error) { alert("Kuskure: " + error.message); return; }
+        await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
         document.getElementById('newFileCustomerName').value = "";
         rufeCreateFileModal();
         await lodaBayaniDagaSupabase();
@@ -1066,7 +1032,7 @@
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString() };
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString(), fromDebit: false };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
 
         if (maiSayaDawn) {
@@ -1106,6 +1072,48 @@
         document.getElementById('kudinBashi').value = "";
         await lodaBayaniDagaSupabase();
         canzaShafi('sashinTebur');
+    }
+
+    // 🌟 AIKIN MARK AS PAID (BIYA BASHI) DAGA FILE
+    async function markBashiAsPaid(bashiId, index) {
+        let bashiRecord = jerinBasussuka.find(b => b.id === bashiId);
+        if(!bashiRecord) return;
+
+        let itemToMove = bashiRecord.history[index];
+        if(!itemToMove) return;
+
+        // Cire shi daga bashi history
+        let updatedBashiHistory = bashiRecord.history.filter((_, i) => i !== index);
+        let updatedBashiTotal = bashiRecord.kudi - itemToMove.kudi;
+
+        // Sabunta ko goge bashi record idan ya zama zero
+        if(updatedBashiTotal <= 0) {
+            await supabaseClient.from('basussuka').delete().eq('id', bashiId);
+        } else {
+            await supabaseClient.from('basussuka').update({ kudi: updatedBashiTotal, history: updatedBashiHistory }).eq('id', bashiId);
+        }
+
+        // Tura shi zuwa siyarwa tare da alamar cewa ya taba zama bashi (fromDebit: true)
+        let paidDetailObj = { 
+            kaya: `${itemToMove.kaya} (An biya daga bashi)`, 
+            kudi: itemToMove.kudi, 
+            lokaci: `${new Date().toLocaleString()} (Biya: ${itemToMove.lokaci})`, 
+            fromDebit: true 
+        };
+
+        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === bashiRecord.suna.toLowerCase());
+        if(siyarwaRecord) {
+            let sabonSiyarwaTotal = siyarwaRecord.kudi + itemToMove.kudi;
+            let sabonSiyarwaHistory = [...(siyarwaRecord.history || []), paidDetailObj];
+            await supabaseClient.from('siyarwa').update({ kudi: sabonSiyarwaTotal, history: sabonSiyarwaHistory }).eq('id', siyarwaRecord.id);
+        } else {
+            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: bashiRecord.suna, kudi: itemToMove.kudi, history: [paidDetailObj] }]);
+        }
+
+        alert("An yi nasarar sauya kudin zuwa shashin siyarwa (An biya bashi)!");
+        rufeCustomerFileModal();
+        await lodaBayaniDagaSupabase();
+        budeCustomerOptions(bashiRecord.suna);
     }
 
     function generateCustomerSummary() {
@@ -1191,48 +1199,46 @@
     }
     function rufeCustomerOptionsModal() { document.getElementById('customerOptionsModal').classList.remove('active-modal'); }
 
-    // Wajen da aka gyara don nuna history ɗaya bayan ɗaya tare da Note da Date/Time
+    // 🌟 WANNAN SHI NE WAJEN DA AKA GYARA DOMIN NUNA DUK BAYANAN SEYAYYA DAYA BAYAN DAYA DA NOTES DA DATE/TIME
     function budeZaɓiFayil(type) {
         rufeCustomerOptionsModal();
         let suna = currentSelectedCustomer;
         let bashiData = jerinBasussuka.find(b => b.suna.toLowerCase() === suna.toLowerCase());
         let siyarwaData = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
         
-        document.getElementById('customerFileTitle').innerText = `Tarihin: ${suna} (${type})`;
+        document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
         let htmlContent = "";
 
-        if (type === 'Siyarwa' || type === 'All') {
-            htmlContent += `<h4 style="color:var(--success-color); margin:5px 0;">🛒 Siyar da Kaya:</h4>`;
-            if (siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
-                htmlContent += `<p style="font-weight:bold; margin:2px 0;">Jimillar Kuɗi: ₦${siyarwaData.kudi.toLocaleString()}</p><ul style="padding-left:15px; margin-top:5px;">`;
-                siyarwaData.history.forEach((h, index) => {
-                    htmlContent += `<li style="margin-bottom:8px; border-bottom:1px dashed #ddd; padding-bottom:5px;">
-                        <b>#${index + 1}</b> - <span style="color:var(--success-color); font-weight:bold;">₦${Number(h.kudi).toLocaleString()}</span><br>
-                        <i style="color:#555;">Note: ${h.kaya}</i><br>
-                        <span style="font-size:11px; color:#888;">📅 ${h.lokaci}</span>
-                    </li>`;
+        // 1. Siyarwa History
+        if(type === 'Siyarwa' || type === 'All') {
+            htmlContent += `<h4 style="color:var(--success-color); border-bottom:1px solid #ccc; padding-bottom:4px;">🛒 Siyar da Kaya</h4>`;
+            if(siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
+                htmlContent += `<b>Jimla: ₦${siyarwaData.kudi.toLocaleString()}</b><ul style="padding-left:18px; margin-top:5px;">`;
+                siyarwaData.history.forEach(h => {
+                    let badge = h.fromDebit ? `<span style="background:var(--warning-color); color:#2d3436; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:bold;">Tsohon Bashi (An Biya)</span><br>` : '';
+                    htmlContent += `<li style="margin-bottom:8px;">${badge}<b>₦${h.kudi.toLocaleString()}</b> - ${h.kaya}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span></li>`;
                 });
                 htmlContent += `</ul>`;
             } else {
-                htmlContent += `<p style="color:#777; font-size:12px;">Babu tarihin siyarwa.</p>`;
+                htmlContent += `<p style="font-size:12px; color:#636e72;">Babu bayanin siyarwa.</p>`;
             }
         }
 
-        if (type === 'Bashi' || type === 'All') {
-            if (type === 'All') htmlContent += `<hr style="margin:15px 0;">`;
-            htmlContent += `<h4 style="color:var(--danger-color); margin:5px 0;">📝 Basussuka:</h4>`;
-            if (bashiData && bashiData.history && bashiData.history.length > 0) {
-                htmlContent += `<p style="font-weight:bold; margin:2px 0;">Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}</p><ul style="padding-left:15px; margin-top:5px;">`;
+        // 2. Bashi History (Tare da maɓallin Mark as Paid)
+        if(type === 'Bashi' || type === 'All') {
+            htmlContent += `<h4 style="color:var(--danger-color); border-bottom:1px solid #ccc; padding-bottom:4px; margin-top:15px;">📝 Basussuka</h4>`;
+            if(bashiData && bashiData.history && bashiData.history.length > 0) {
+                htmlContent += `<b>Jimlar Bashi: ₦${bashiData.kudi.toLocaleString()}</b><ul style="padding-left:18px; margin-top:5px;">`;
                 bashiData.history.forEach((h, index) => {
-                    htmlContent += `<li style="margin-bottom:8px; border-bottom:1px dashed #ddd; padding-bottom:5px;">
-                        <b>#${index + 1}</b> - <span style="color:var(--danger-color); font-weight:bold;">₦${Number(h.kudi).toLocaleString()}</span><br>
-                        <i style="color:#555;">Note: ${h.kaya}</i><br>
-                        <span style="font-size:11px; color:#888;">📅 ${h.lokaci}</span>
+                    htmlContent += `<li style="margin-bottom:12px; background:#fff; padding:8px; border:1px solid #e1e1e1; border-radius:6px;">
+                        <b>₦${h.kudi.toLocaleString()}</b> - ${h.kaya}<br>
+                        <span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span><br>
+                        <button onclick="markBashiAsPaid('${bashiData.id}', ${index})" style="background:var(--success-color); color:white; border:none; padding:4px 8px; font-size:11px; border-radius:4px; cursor:pointer; margin-top:5px; font-weight:bold;">✔ Mark as Paid (Biya)</button>
                     </li>`;
                 });
                 htmlContent += `</ul>`;
             } else {
-                htmlContent += `<p style="color:#777; font-size:12px;">Babu tarihin bashi.</p>`;
+                htmlContent += `<p style="font-size:12px; color:#636e72;">Babu wani bashi a kansa.</p>`;
             }
         }
 
