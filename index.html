@@ -428,10 +428,10 @@
             display: flex; justify-content: space-between; align-items: center; font-weight: bold;
         }
 
-        /* PROFESSIONAL SUMMARY CARD (9:16 Ratio - Extended Height to fit details cleanly) */
+        /* PROFESSIONAL SUMMARY CARD (9:16 Ratio - Expanded to avoid cramped layouts) */
         #summaryPreviewCard {
             width: 380px;
-            min-height: 720px;
+            min-height: 680px;
             background: linear-gradient(135deg, #0984e3 0%, #6c5ce7 100%);
             color: #ffffff;
             padding: 20px 15px;
@@ -446,11 +446,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
         }
-        .card-header-title { font-size: 16px; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; color: #fdcb6e; }
+        .card-header-title { font-size: 17px; font-weight: 800; letter-spacing: 1px; margin-bottom: 3px; text-transform: uppercase; color: #fdcb6e; }
         .card-customer-name { font-size: 20px; font-weight: 900; background: #ffffff; color: #2d3436; padding: 6px; border-radius: 8px; margin: 6px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .card-date-box { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 6px; font-weight: bold; }
-        .card-section-title { font-size: 13px; font-weight: bold; color: #00cec9; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 3px; margin-top: 8px; text-align: left; }
-        .card-item-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin: 4px 0; background: rgba(0,0,0,0.15); padding: 5px 8px; border-radius: 6px; text-align: left; }
+        .card-section-title { font-size: 13px; font-weight: bold; color: #00cec9; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 4px; margin-top: 8px; text-align: left; }
+        .card-item-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin: 4px 0; background: rgba(0,0,0,0.15); padding: 6px 8px; border-radius: 6px; text-align: left; }
         .card-footer-sirdique { font-size: 11px; margin-top: 10px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.2); font-weight: 700; }
         .card-footer-sirdique span:nth-child(1) { color: #ff7675; }
         .card-footer-sirdique span:nth-child(2) { color: #fab1a0; }
@@ -597,29 +597,29 @@
                 </div>
             </div>
 
-            <!-- 3. SEARCH & DOWNLOAD SUMMARY (UPDATED TIME RANGES) -->
+            <!-- 3. SEARCH & DOWNLOAD SUMMARY -->
             <div id="sashinSummaryDownload" class="page-section">
                 <div class="container">
                     <h2>📥 Bincike & Download Summary</h2>
                     <div class="form-group">
-                        <label for="searchSummaryName">Sunan Abokin Ciniki:</label>
-                        <input type="text" id="searchSummaryName" placeholder="Rubuta sunan..." oninput="generateCustomerSummary()">
+                        <label for="searchSummaryName">Sunan Abokin Ciniki (Bar shi a Banza don General Summary):</label>
+                        <input type="text" id="searchSummaryName" placeholder="Rubuta sunan (Optional)..." oninput="generateCustomerSummary()">
                     </div>
                     <div class="form-group">
-                        <label for="filterPeriodSelect">Zaɓi Lokaci (Time Filter):</label>
+                        <label for="filterPeriodSelect">Zaɓi Lokaci (Period):</label>
                         <select id="filterPeriodSelect" onchange="generateCustomerSummary()">
-                            <option value="all">Duk Tarihin (All Time)</option>
-                            <option value="today">Yau (Today)</option>
-                            <option value="this_week">Wannan Satin (This Week)</option>
-                            <option value="last_2_weeks">Satin 2 da suka wuce (Last 2 Weeks)</option>
-                            <option value="this_month">Wannan Watan (This Month)</option>
-                            <option value="last_3_months">Watanni 3 da suka wuce (Last 3 Months)</option>
+                            <option value="all">Duk Lokaci (All Time)</option>
+                            <option value="today">Today (Yau)</option>
+                            <option value="this_week">This Week (Wannan Satin)</option>
+                            <option value="past_2_weeks">Past 2 Weeks (Sati 2 na Baya)</option>
+                            <option value="this_month">This Month (Wannan Watan)</option>
+                            <option value="past_3_months">Past 3 Months (Watanni 3 na Baya)</option>
                         </select>
                     </div>
                     <div id="summaryPreviewWrapper" style="overflow-x: auto; margin-bottom: 15px;">
-                        <div id="summaryPreviewBox"><i>Babu sunan da aka rubuta tukuna...</i></div>
+                        <div id="summaryPreviewBox"><i>Ana shirya bayanan summary...</i></div>
                     </div>
-                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryCard()" style="background: var(--primary-color); display: none;">📥 Download Professional Card (9:16)</button>
+                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryCard()" style="background: var(--primary-color);">📥 Download Professional Card (9:16)</button>
                 </div>
             </div>
 
@@ -1038,6 +1038,7 @@
         if (zabiShafi) {
             zabiShafi.classList.add('active');
             if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
+            if(shafiId === 'sashinSummaryDownload') generateCustomerSummary();
         }
         let sb = document.getElementById('mySidebar');
         if(sb) sb.classList.add('rufe');
@@ -1092,6 +1093,9 @@
 
         nunaTebur();
         nunaTeburSiyarwa();
+        if(document.getElementById('sashinSummaryDownload').classList.contains('active')) {
+            generateCustomerSummary();
+        }
     }
 
     async function ajiyeSabonFileTsantsa() {
@@ -1111,7 +1115,7 @@
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
         let d = new Date();
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), dateOnly: d.toLocaleDateString(), rawDate: d.getTime(), type: 'Siyarwa' };
+        let detailObj = { kaya: kaya, kudi: kudi, lokaci: d.toLocaleString(), dateObjVal: d.getTime(), dateOnly: d.toLocaleDateString(), type: 'Siyarwa' };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
 
         if (maiSayaDawn) {
@@ -1141,7 +1145,7 @@
         if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
         let d = new Date();
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), dateOnly: d.toLocaleDateString(), rawDate: d.getTime(), type: 'Bashi' };
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: d.toLocaleString(), dateObjVal: d.getTime(), dateOnly: d.toLocaleDateString(), type: 'Bashi' };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
 
         if (mutumDawn) {
@@ -1166,94 +1170,121 @@
 
     function generateCustomerSummary() {
         let keyword = document.getElementById('searchSummaryName').value.trim().toLowerCase();
-        let periodFilter = document.getElementById('filterPeriodSelect').value;
+        let period = document.getElementById('filterPeriodSelect').value;
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
 
-        if (keyword === "") { 
-            previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; 
-            downloadBtn.style.display = "none"; 
-            return; 
-        }
+        let now = new Date();
+        let todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-        let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
-        let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
-
-        if (!bashiRecord && !siyarwaRecord) { 
-            previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; 
-            downloadBtn.style.display = "none"; 
-            return; 
-        }
-
-        let customerName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
-        
-        let siyarwaItems = siyarwaRecord && siyarwaRecord.history ? [...siyarwaRecord.history] : [];
-        let bashiItems = bashiRecord && bashiRecord.history ? [...bashiRecord.history] : [];
-
-        // Time filtering logic
-        const now = new Date();
-        const todayStr = now.toLocaleDateString();
-        
         function filterByPeriod(item) {
-            let itemDate = item.rawDate ? new Date(item.rawDate) : new Date(item.dateOnly || now);
-            if (periodFilter === 'today') {
-                return item.dateOnly === todayStr;
-            } else if (periodFilter === 'this_week') {
-                const firstDayOfWeek = new Date(now);
-                firstDayOfWeek.setDate(now.getDate() - now.getDay());
-                return itemDate >= firstDayOfWeek && itemDate <= now;
-            } else if (periodFilter === 'last_2_weeks') {
-                const twoWeeksAgo = new Date(now);
-                twoWeeksAgo.setDate(now.getDate() - 14);
-                const oneWeekAgo = new Date(now);
-                oneWeekAgo.setDate(now.getDate() - 7);
-                return itemDate >= twoWeeksAgo && itemDate <= oneWeekAgo;
-            } else if (periodFilter === 'this_month') {
-                return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
-            } else if (periodFilter === 'last_3_months') {
-                const threeMonthsAgo = new Date(now);
-                threeMonthsAgo.setMonth(now.getMonth() - 3);
-                return itemDate >= threeMonthsAgo && itemDate <= now;
+            let itemTime = item.dateObjVal ? item.dateObjVal : (item.lokaci ? new Date(item.lokaci).getTime() : todayMidnight);
+            if (isNaN(itemTime)) itemTime = todayMidnight;
+
+            if (period === 'today') {
+                return itemTime >= todayMidnight;
+            } else if (period === 'this_week') {
+                let firstDayOfWeek = new Date(now);
+                let day = now.getDay();
+                let diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+                firstDayOfWeek.setDate(diff);
+                firstDayOfWeek.setHours(0,0,0,0);
+                return itemTime >= firstDayOfWeek.getTime();
+            } else if (period === 'past_2_weeks') {
+                let twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000)).getTime();
+                return itemTime >= twoWeeksAgo && itemTime < todayMidnight;
+            } else if (period === 'this_month') {
+                let firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                return itemTime >= firstDayOfMonth;
+            } else if (period === 'past_3_months') {
+                let threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1).getTime();
+                return itemTime >= threeMonthsAgo;
             }
             return true; // 'all'
         }
 
+        let siyarwaItems = [];
+        let bashiItems = [];
+        let summaryTitle = "General Summary";
+
+        if (keyword !== "") {
+            let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
+            let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
+
+            if (!bashiRecord && !siyarwaRecord) { 
+                previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu mai suna "${keyword}".</span>`; 
+                downloadBtn.style.display = "none"; 
+                return; 
+            }
+
+            summaryTitle = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
+            if (siyarwaRecord && siyarwaRecord.history) siyarwaItems = [...siyarwaRecord.history];
+            if (bashiRecord && bashiRecord.history) bashiItems = [...bashiRecord.history];
+        } else {
+            // General Summary: Haɗa na kowa da kowa
+            jerinSiyarwa.forEach(s => {
+                if (s.history) {
+                    s.history.forEach(h => {
+                        siyarwaItems.push({ ...h, customerName: s.maiSaya });
+                    });
+                }
+            });
+            jerinBasussuka.forEach(b => {
+                if (b.history) {
+                    b.history.forEach(h => {
+                        bashiItems.push({ ...h, customerName: b.suna });
+                    });
+                }
+            });
+        }
+
+        // Apply time period filtering
         siyarwaItems = siyarwaItems.filter(filterByPeriod);
         bashiItems = bashiItems.filter(filterByPeriod);
 
         let totalSiyarwaAmount = siyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
         let totalBashiAmount = bashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
 
+        let periodLabelText = {
+            'all': 'Duk Lokaci',
+            'today': 'Yau (Today)',
+            'this_week': 'Wannan Satin',
+            'past_2_weeks': 'Sati 2 na Baya',
+            'this_month': 'Wannan Watan',
+            'past_3_months': 'Watanni 3 na Baya'
+        }[period];
+
         let cardHtml = `<div id="summaryPreviewCard">
             <div>
-                <div class="card-header-title">Tarihin Kasuwanci</div>
-                <div class="card-customer-name">${customerName}</div>
-                <div class="card-date-box">📅 Yau: ${todayStr} (${periodFilter.replace('_', ' ').toUpperCase()})</div>
+                <div class="card-header-title">📊 ${keyword === "" ? "General Summary" : "Tarihin Abokin Ciniki"}</div>
+                <div class="card-customer-name">${summaryTitle}</div>
+                <div class="card-date-box">📅 ${periodLabelText} | ${new Date().toLocaleDateString()}</div>
             </div>
             <div style="text-align: left; max-height: 420px; overflow-y: auto; padding-right: 5px;">
                 
-                <div class="card-section-title">🛒 1. Siyan Kaya (Siyarwa) - ₦${totalSiyarwaAmount.toLocaleString()}</div>`;
+                <div class="card-section-title">🛒 1. Bangaren Siyayya (Siyarwa) - ₦${totalSiyarwaAmount.toLocaleString()}</div>`;
         
         if(siyarwaItems.length === 0) {
             cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan siyarwa a wannan lokacin.</div>`;
         } else {
             siyarwaItems.forEach(act => {
-                let debitTag = act.wasDebit ? ' <small style="background:#d63031; padding:1px 3px; border-radius:3px;">(Bashi)</small>' : '';
+                let namePrefix = keyword === "" && act.customerName ? `<b>[${act.customerName}]</b> ` : '';
                 cardHtml += `<div class="card-item-row">
-                    <div><b>${act.kaya}</b>${debitTag}<br><small style="opacity:0.8; font-size:10px;">📅 ${act.dateOnly || 'Yau'} | ⏰ ${act.lokaci || ''}</small></div>
+                    <div>${namePrefix}<b>${act.kaya}</b><br><small style="opacity:0.8;">📅 ${act.dateOnly || '—'} ⏰ ${act.lokaci || '—'}</small></div>
                     <div style="font-weight:bold; color:#00cec9; font-size:12px;">₦${Number(act.kudi).toLocaleString()}</div>
                 </div>`;
             });
         }
 
-        cardHtml += `<div class="card-section-title" style="margin-top: 10px; color: #ff7675;">📝 2. Bangaren Bashi - ₦${totalBashiAmount.toLocaleString()}</div>`;
+        cardHtml += `<div class="card-section-title" style="margin-top: 10px; color: #ff7675;">📝 2. Bangaren Bashi (Debite) - ₦${totalBashiAmount.toLocaleString()}</div>`;
 
         if(bashiItems.length === 0) {
             cardHtml += `<div style="font-size:11px; opacity:0.8; margin: 4px 0;">Babu bayanan bashi a wannan lokacin.</div>`;
         } else {
             bashiItems.forEach(act => {
+                let namePrefix = keyword === "" && act.customerName ? `<b>[${act.customerName}]</b> ` : '';
                 cardHtml += `<div class="card-item-row">
-                    <div><b>${act.kaya}</b><br><small style="opacity:0.8; font-size:10px;">📅 ${act.dateOnly || 'Yau'} | ⏰ ${act.lokaci || ''}</small></div>
+                    <div>${namePrefix}<b>${act.kaya}</b><br><small style="opacity:0.8;">📅 ${act.dateOnly || '—'} ⏰ ${act.lokaci || '—'}</small></div>
                     <div style="font-weight:bold; color:#ff7675; font-size:12px;">₦${Number(act.kudi).toLocaleString()}</div>
                 </div>`;
             });
@@ -1353,7 +1384,7 @@
                     <div><b>Rukuni:</b> ${item.category} ${item.wasDebit ? '<span style="color:var(--danger-color); font-size:10px;">(Taɓa Bashi)</span>' : ''}</div>
                     <div><b>Kaya/Bayani:</b> ${item.kaya}</div>
                     <div><b>Kuɗi:</b> ₦${Number(item.kudi).toLocaleString()}</div>
-                    <div style="font-size:11px; color:#636e72;"><b>Rana & Lokaci:</b> 📅 ${item.dateOnly || 'Yau'} ⏰ ${item.lokaci || ''}</div>
+                    <div style="font-size:11px; color:#636e72;"><b>Lokaci:</b> ${item.lokaci}</div>
                     ${markPaidBtn}
                 </div>`;
             });
@@ -1381,7 +1412,7 @@
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === suna.toLowerCase());
         if (siyarwaRecord) {
             let sabonJimlaSiyarwa = siyarwaRecord.kudi + itemToMove.kudi;
-            let sabonSiyarwaHistory = [...(siyarwaRecord.history || []), itemToMove];
+            let sabonSiyarwaHistory = [...(siyaRecord.history || []), itemToMove];
             await supabaseClient.from('siyarwa').update({ kudi: sabonJimlaSiyarwa, history: sabonSiyarwaHistory }).eq('id', siyarwaRecord.id);
         } else {
             await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: suna, kudi: itemToMove.kudi, history: [itemToMove] }]);
