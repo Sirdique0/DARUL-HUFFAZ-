@@ -409,10 +409,8 @@
         }
         .modal.active-modal { display: flex; }
         .modal-content {
-            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px;
+            background-color: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
-            max-height: 85vh;
-            overflow-y: auto;
         }
         .close-btn { background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
@@ -470,7 +468,7 @@
             <div>
                 <h2>Sarrafa Kasuwanci</h2>
                 <ul class="menu-list" id="sidebarMenuList">
-                    <!-- Za a cika su ta code dangane da ko admin ne ko akasin haka -->
+                    <!-- Za a cika su ta code -->
                 </ul>
             </div>
             <div class="clock-box">
@@ -566,15 +564,21 @@
             <!-- 3. SEARCH & DOWNLOAD SUMMARY -->
             <div id="sashinSummaryDownload" class="page-section">
                 <div class="container">
-                    <h2>📥 Bincike & Download Summary</h2>
+                    <h2>📥 Bincike & Download Summary (9:16 Receipt)</h2>
                     <div class="form-group">
                         <label for="searchSummaryName">Sunan Abokin Ciniki:</label>
                         <input type="text" id="searchSummaryName" placeholder="Rubuta sunan..." oninput="generateCustomerSummary()">
                     </div>
-                    <div id="summaryPreviewBox" style="background: #f9f9f9; border: 1px solid #dfe6e9; padding: 12px; border-radius: 8px; font-size: 13px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label for="filterMonthSelect">Zabi Wata (Idan ya wuce wata daya):</label>
+                        <select id="filterMonthSelect" onchange="generateCustomerSummary()">
+                            <option value="all">Duk Watanni (All)</option>
+                        </select>
+                    </div>
+                    <div id="summaryPreviewBox" style="background: #0984e3; color: white; padding: 20px; border-radius: 12px; font-size: 13px; max-height: 320px; overflow-y: auto; margin-bottom: 15px; text-align: center;">
                         <i>Babu sunan da aka rubuta tukuna...</i>
                     </div>
-                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Professional Summary (TXT)</button>
+                    <button class="btn-primary" id="downloadSummaryBtn" onclick="downloadCustomerSummaryFile()" style="background: var(--primary-color); display: none;">📥 Download Summary (9:16 Card TXT)</button>
                 </div>
             </div>
 
@@ -742,16 +746,16 @@
             <h3 id="optModalCustomerName" style="color: var(--primary-color); margin-top: 0;"></h3>
             <button class="btn-voice" style="background: var(--accent-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Siyarwa')">🛒 Bayanan Siyar da Kaya</button>
             <button class="btn-voice" style="background: var(--warning-color); color: #2d3436; margin-bottom: 10px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('Bashi')">📝 Bayanan Bashi</button>
-            <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Cikakken Tarihi (All Items)</button>
-            <button onclick="gogeFayilMutum()" style="background: var(--danger-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">🗑️ Goge Wannan Fayil ɗin</button>
+            <button class="btn-voice" style="background: var(--primary-color); color: white; margin-bottom: 15px; width: 100%; padding: 12px; font-weight: bold;" onclick="budeZaɓiFayil('All')">📂 Dukansu Tare (All)</button>
             <button class="close-btn" onclick="rufeCustomerOptionsModal()">Rufe</button>
         </div>
     </div>
 
     <div class="modal" id="customerFileModal">
-        <div class="modal-content">
-            <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0;">Cikakken Tarihi</h3>
-            <div id="customerFileContent" style="font-size: 13px; max-height: 320px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
+        <div class="modal-content" style="max-width: 480px;">
+            <h3 id="customerFileTitle" style="color: var(--primary-color); margin-top: 0; text-align: center;">Cikakken Tarihi</h3>
+            <div id="customerFileContent" style="font-size: 13px; max-height: 350px; overflow-y: auto; background: #f9f9f9; padding: 12px; border-radius: 8px;"></div>
+            <button class="btn-primary" onclick="gogeFayilMutumGabaDaya()" style="background: var(--danger-color); margin-top: 15px;">🗑️ Goge Wannan Fayil ɗin</button>
             <button class="close-btn" onclick="rufeCustomerFileModal()">Rufe</button>
         </div>
     </div>
@@ -805,7 +809,7 @@
                 currentUser = data.user;
                 let suspended = await dubaKoAnYiSuspend(currentUser.id);
                 if(suspended) {
-                    alert("⚠️ An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
+                    alert("⚠️ Ƙishirwa! An dakatar da (Suspend) wannan account ɗin daga amfani da tsarin.");
                     await supabaseClient.auth.signOut();
                     currentUser = null;
                     return;
@@ -817,8 +821,8 @@
 
     async function dubaKoAnYiSuspend(userId) {
         if(userId === '') return false;
-        let { data, error } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
-        if(data && data.status === 'suspended') { return true; }
+        let { data } = await supabaseClient.from('profiles').select('status').eq('id', userId).single();
+        if(data && data.status === 'suspended') return true;
         return false;
     }
 
@@ -909,10 +913,9 @@
 
     async function lodaBayananAdmin() {
         if(!isAdmin) return;
-        let { data: allFiles } = await supabaseClient.from('customer_files').select('*');
+        let { data: allProfiles } = await supabaseClient.from('profiles').select('*');
         let { data: allSiyarwa } = await supabaseClient.from('siyarwa').select('*');
         let { data: allBasussuka } = await supabaseClient.from('basussuka').select('*');
-        let { data: allProfiles } = await supabaseClient.from('profiles').select('*');
 
         let totalSalesVal = allSiyarwa ? allSiyarwa.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
         let totalDebtsVal = allBasussuka ? allBasussuka.reduce((acc, curr) => acc + (curr.kudi || 0), 0) : 0;
@@ -924,18 +927,28 @@
 
         let usersTable = document.getElementById('adminUsersTableBody');
         usersTable.innerHTML = "";
+        
         if(allProfiles && allProfiles.length > 0) {
             allProfiles.forEach(p => {
-                let statusBadge = p.status === 'suspended' ? `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
-                let actionBtn = p.status === 'suspended' ? `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+                let statusBadge = p.status === 'suspended' ? 
+                    `<span style="color:var(--danger-color); font-weight:bold;">Suspended 🛑</span>` : 
+                    `<span style="color:var(--success-color); font-weight:bold;">Active ✅</span>`;
+                
+                let actionBtn = p.status === 'suspended' ? 
+                    `<button onclick="canzaUserStatus('${p.id}', 'active')" style="background:var(--success-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Sanya Active</button>` : 
+                    `<button onclick="canzaUserStatus('${p.id}', 'suspended')" style="background:var(--danger-color); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">Suspend 🛑</button>`;
+
                 usersTable.innerHTML += `<tr><td style="font-size:12px; word-break:break-all;">${p.email || p.id}</td><td>${statusBadge}</td><td>${actionBtn}</td></tr>`;
             });
+        } else {
+            usersTable.innerHTML = `<tr><td colspan="3" style="text-align:center;">Babu bayanan profiles.</td></tr>`;
         }
     }
 
     async function canzaUserStatus(userId, sabonStatus) {
         let { error } = await supabaseClient.from('profiles').update({ status: sabonStatus }).eq('id', userId);
-        if(error) { alert("Kuskure: " + error.message); } else { alert(`An canza status zuwa ${sabonStatus}!`); lodaBayananAdmin(); }
+        if(error) alert("Kuskure: " + error.message);
+        else { alert(`An yi nasara!`); lodaBayananAdmin(); }
     }
 
     function faraAgogo() {
@@ -959,12 +972,15 @@
     });
 
     function canzaShafi(shafiId) {
-        if(isAdmin && shafiId !== 'sashinAdminDashboard') { alert("Kai Admin ne!"); return; }
+        if(isAdmin && shafiId !== 'sashinAdminDashboard') {
+            alert("Kai Admin ne!"); return;
+        }
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         const zabiShafi = document.getElementById(shafiId);
         if (zabiShafi) {
             zabiShafi.classList.add('active');
             if(shafiId === 'sashinFilesRecord') nunaJerinSunayenFiles();
+            if(shafiId === 'sashinSummaryDownload') populateMonthFilterDropdown();
         }
         let sb = document.getElementById('mySidebar');
         if(sb) sb.classList.add('rufe');
@@ -980,7 +996,7 @@
         let sabonPass = document.getElementById('newPasswordInput').value.trim();
         if(!sabonPass) { alert("Don Allah rubuta sabuwar kalmar sirri!"); return; }
         let { error } = await supabaseClient.auth.updateUser({ password: sabonPass });
-        if(error) { alert("Kuskure: " + error.message); }
+        if(error) alert("Kuskure: " + error.message);
         else { alert("An yi nasarar sauya kalmar sirri!"); document.getElementById('newPasswordInput').value = ""; canzaShafi('sashinSettingsMain'); }
     }
 
@@ -1008,6 +1024,13 @@
     async function lodaBayaniDagaSupabase() {
         if(!currentUser || isAdmin) return;
         
+        let suspended = await dubaKoAnYiSuspend(currentUser.id);
+        if(suspended) {
+            alert("⚠️ An dakatar da (Suspend) wannan account ɗin.");
+            await fitaDagaAccount();
+            return;
+        }
+
         let { data: files } = await supabaseClient.from('customer_files').select('*').eq('user_id', currentUser.id);
         if(files) jerinFayilolinMutane = files.map(f => ({ id: f.id, suna: f.suna }));
 
@@ -1024,7 +1047,8 @@
     async function ajiyeSabonFileTsantsa() {
         let suna = document.getElementById('newFileCustomerName').value.trim();
         if (suna === "") { alert("Don Allah rubuta sunan abokin ciniki!"); return; }
-        await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
+        let { error } = await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
+        if(error) { alert("Kuskure: " + error.message); return; }
         document.getElementById('newFileCustomerName').value = "";
         rufeCreateFileModal();
         await lodaBayaniDagaSupabase();
@@ -1037,7 +1061,8 @@
         let kudi = parseFloat(document.getElementById('kudinSiyarwa').value);
         if (maiSaya === "" || isNaN(kudi) || kaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let detailObj = { kaya: kaya, kudi: kudi, lokaci: new Date().toLocaleString(), status: 'paid' };
+        let now = new Date();
+        let detailObj = { kaya: kaya, kudi: kudi, date: now.toLocaleDateString(), time: now.toLocaleTimeString(), timestamp: now.getTime() };
         let maiSayaDawn = jerinSiyarwa.find(item => item.maiSaya.toLowerCase() === maiSaya.toLowerCase());
 
         if (maiSayaDawn) {
@@ -1046,6 +1071,12 @@
             await supabaseClient.from('siyarwa').update({ kudi: sabonJimla, history: sabonHistory }).eq('id', maiSayaDawn.id);
         } else {
             await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: maiSaya, kudi: kudi, history: [detailObj] }]);
+        }
+
+        // Tabbatar akwai file na abokin ciniki a customer_files kuma
+        let fileDawn = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === maiSaya.toLowerCase());
+        if(!fileDawn) {
+            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: maiSaya }]);
         }
 
         document.getElementById('sunanMaiSaya').value = "";
@@ -1061,7 +1092,8 @@
         let kudi = parseFloat(document.getElementById('kudinBashi').value);
         if (suna === "" || isNaN(kudi) || bayaninKaya === "") { alert("Cika duk wuraren da ake bukata!"); return; }
 
-        let detailObj = { kaya: bayaninKaya, kudi: kudi, lokaci: new Date().toLocaleString(), status: 'debt' };
+        let now = new Date();
+        let detailObj = { kaya: bayaninKaya, kudi: kudi, date: now.toLocaleDateString(), time: now.toLocaleTimeString(), timestamp: now.getTime() };
         let mutumDawn = jerinBasussuka.find(item => item.suna.toLowerCase() === suna.toLowerCase());
 
         if (mutumDawn) {
@@ -1072,6 +1104,11 @@
             await supabaseClient.from('basussuka').insert([{ user_id: currentUser.id, suna: suna, kudi: kudi, history: [detailObj] }]);
         }
 
+        let fileDawn = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
+        if(!fileDawn) {
+            await supabaseClient.from('customer_files').insert([{ user_id: currentUser.id, suna: suna }]);
+        }
+
         document.getElementById('sunanMutum').value = "";
         document.getElementById('abinDaYaAnsa').value = "";
         document.getElementById('kudinBashi').value = "";
@@ -1079,110 +1116,150 @@
         canzaShafi('sashinTebur');
     }
 
-    // MARK DEBT AS PAID FEATURE
-    async function markDebtAsPaid(customerName, index) {
+    // Mark Bashi as Paid (Transfer to Siyarwa)
+    async function markBashiAsPaid(customerName, index) {
         let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase() === customerName.toLowerCase());
-        if(!bashiRecord) return;
+        if(!bashiRecord || !bashiRecord.history[index]) return;
 
-        let itemToPay = bashiRecord.history[index];
-        if(!itemToPay) return;
+        let itemToMove = bashiRecord.history[index];
+        if(confirm(`Kuna son tabbatar da cewa "${itemToMove.kaya}" (₦${itemToMove.kudi.toLocaleString()}) an biya shi kuma an mayar da shi zuwa sashin Siyarwa?`)) {
+            // 1. Cire shi daga bashi history ko rage bashi
+            let updatedBashiHistory = [...bashiRecord.history];
+            updatedBashiHistory.splice(index, 1);
+            let updatedBashiTotal = bashiRecord.kudi - itemToMove.kudi;
 
-        if(!confirm(`Shin kana tabbatar da cewa wannan mutumin ya biya bashin na ₦${itemToPay.kudi.toLocaleString()} (${itemToPay.kaya})?`)) return;
+            if(updatedBashiTotal <= 0 && updatedBashiHistory.length === 0) {
+                await supabaseClient.from('basussuka').delete().eq('id', bashiRecord.id);
+            } else {
+                await supabaseClient.from('basussuka').update({ kudi: updatedBashiTotal, history: updatedBashiHistory }).eq('id', bashiRecord.id);
+            }
 
-        // 1. Update Bashi Record (Reduce total and mark history item status)
-        let updatedBashiHistory = [...bashiRecord.history];
-        updatedBashiHistory[index].status = 'paid_from_debt';
-        let newBashiTotal = bashiRecord.kudi - itemToPay.kudi;
+            // 2. Ƙara shi zuwa siyarwa record tare da alamar ya fito daga bashi
+            let now = new Date();
+            let paidDetail = { kaya: `[An biya bashi] ${itemToMove.kaya}`, kudi: itemToMove.kudi, date: now.toLocaleDateString(), time: now.toLocaleTimeString(), timestamp: now.getTime() };
+            
+            let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === customerName.toLowerCase());
+            if(siyarwaRecord) {
+                let sabonSiyarwaTotal = siyarwaRecord.kudi + itemToMove.kudi;
+                let sabonSiyarwaHistory = [...(siyarwaRecord.history || []), paidDetail];
+                await supabaseClient.from('siyarwa').update({ kudi: sabonSiyarwaTotal, history: sabonSiyarwaHistory }).eq('id', siyarwaRecord.id);
+            } else {
+                await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: customerName, kudi: itemToMove.kudi, history: [paidDetail] }]);
+            }
 
-        if(newBashiTotal <= 0) {
-            await supabaseClient.from('basussuka').delete().eq('id', bashiRecord.id);
-        } else {
-            await supabaseClient.from('basussuka').update({ kudi: newBashiTotal, history: updatedBashiHistory }).eq('id', bashiRecord.id);
+            alert("An yi nasarar sauya bashi zuwa sashin siyarwa!");
+            await lodaBayaniDagaSupabase();
+            rufeCustomerFileModal();
         }
-
-        // 2. Add to Siyarwa Record
-        let maiSayaDawn = jerinSiyarwa.find(s => s.maiSaya.toLowerCase() === customerName.toLowerCase());
-        let paidDetailObj = { kaya: `${itemToPay.kaya} (An biya daga tsohon bashi)`, kudi: itemToPay.kudi, lokaci: new Date().toLocaleString(), status: 'cleared_debt' };
-
-        if(maiSayaDawn) {
-            let sabonJimlaSiyarwa = maiSayaDawn.kudi + itemToPay.kudi;
-            let sabonHistorySiyarwa = [...(maiSayaDawn.history || []), paidDetailObj];
-            await supabaseClient.from('siyarwa').update({ kudi: sabonJimlaSiyarwa, history: sabonHistorySiyarwa }).eq('id', maiSayaDawn.id);
-        } else {
-            await supabaseClient.from('siyarwa').insert([{ user_id: currentUser.id, mai_saya: customerName, kudi: itemToPay.kudi, history: [paidDetailObj] }]);
-        }
-
-        alert("An yi nasarar sauya bashi zuwa biya (Paid) nan take!");
-        rufeCustomerFileModal();
-        await lodaBayaniDagaSupabase();
     }
 
-    // DELETE CUSTOMER FILE
-    async function gogeFayilMutum() {
+    // Delete entire customer file but keep history in other places
+    async function gogeFayilMutumGabaDaya() {
         let suna = currentSelectedCustomer;
-        if(!confirm(`Shin kana son goge fayil din "${suna}"? (Lura: Tarihin siyarwa da bashi a cikin tebur ba za su gogu ba, fayil ɗinsa kawai zai gogu).`)) return;
-
-        let fileObj = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
-        if(fileObj) {
-            await supabaseClient.from('customer_files').delete().eq('id', fileObj.id);
+        if(confirm(`Kuna son goge fayil din "${suna}"? (History dinsa a sashin siyarwa da bashi zai ci gaba da kasancewa a tsarin).`)) {
+            let fileRecord = jerinFayilolinMutane.find(f => f.suna.toLowerCase() === suna.toLowerCase());
+            if(fileRecord) {
+                await supabaseClient.from('customer_files').delete().eq('id', fileRecord.id);
+            }
+            alert("An goge fayil din abokin ciniki!");
+            rufeCustomerFileModal();
+            await lodaBayaniDagaSupabase();
+            nunaJerinSunayenFiles();
         }
-        rufeCustomerOptionsModal();
-        alert("An goge fayil ɗin cikin nasara!");
-        await lodaBayaniDagaSupabase();
-        nunaJerinSunayenFiles();
+    }
+
+    function populateMonthFilterDropdown() {
+        let monthSelect = document.getElementById('filterMonthSelect');
+        monthSelect.innerHTML = `<option value="all">Duk Watanni (All)</option>`;
+        
+        let allDates = new Set();
+        jerinSiyarwa.forEach(s => { (s.history || []).forEach(h => { if(h.date) allDates.add(h.date.substring(3)); }); });
+        jerinBasussuka.forEach(b => { (b.history || []).forEach(h => { if(h.date) allDates.add(h.date.substring(3)); }); });
+
+        allDates.forEach(monthYear => {
+            monthSelect.innerHTML += `<option value="${monthYear}">Watan ${monthYear}</option>`;
+        });
     }
 
     function generateCustomerSummary() {
         let keyword = document.getElementById('searchSummaryName').value.trim().toLowerCase();
+        let selectedMonth = document.getElementById('filterMonthSelect').value;
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
-        if (keyword === "") { previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; downloadBtn.style.display = "none"; return; }
+        
+        if (keyword === "") { 
+            previewBox.innerHTML = "<i>Babu sunan da aka rubuta tukuna...</i>"; 
+            downloadBtn.style.display = "none"; 
+            return; 
+        }
 
         let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
-        if (!bashiRecord && !siyarwaRecord) { previewBox.innerHTML = `<span style="color:var(--danger-color);">Babu wani bayani da aka samu.</span>`; downloadBtn.style.display = "none"; return; }
-
-        let custName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
-
-        let summaryText = `═══════════════════════════\n   MAULANA / KASUWANCI SUMMARY   \n═══════════════════════════\n`;
-        summaryText += `SUNAN ABOKIN CINIKI: ${custName}\nKwanan Wata: ${new Date().toLocaleDateString()}\n-------------------------------------------\n\n`;
         
-        let htmlText = `<div style="border-bottom:2px solid #6c5ce7; padding-bottom:8px; margin-bottom:10px;"><h3 style="margin:0; color:#6c5ce7;">📌 ABOKIN CINIKI: ${custName}</h3></div>`;
+        if (!bashiRecord && !siyarwaRecord) { 
+            previewBox.innerHTML = `<span style="color:#ff7675;">Babu wani bayani da aka samu.</span>`; 
+            downloadBtn.style.display = "none"; 
+            return; 
+        }
 
+        let customerName = siyarwaRecord ? siyarwaRecord.maiSaya : bashiRecord.suna;
+        
+        // Group transactions by date boxes
+        let groupedByDate = {};
+        
         if (siyarwaRecord && siyarwaRecord.history) {
-            summaryText += `[+] SASHEN SIYAR DA KAYA:\n`;
-            htmlText += `<b style="color:var(--success-color);">🛒 Sashen Siyar da Kaya:</b><ul style="margin:5px 0 15px 20px; padding:0;">`;
             siyarwaRecord.history.forEach(h => {
-                summaryText += ` - ${h.kaya} | ₦${h.kudi.toLocaleString()} (${h.lokaci})\n`;
-                htmlText += `<li><b>${h.kaya}</b> - ₦${h.kudi.toLocaleString()} <span style="font-size:11px; color:#636e72;">(${h.lokaci})</span></li>`;
+                let mKey = h.date ? h.date.substring(3) : "";
+                if(selectedMonth === 'all' || mKey === selectedMonth) {
+                    let dBox = h.date || "Kwanan Wata Ba a Sani Ba";
+                    if(!groupedByDate[dBox]) groupedByDate[dBox] = [];
+                    groupedByDate[dBox].push({ type: 'Siyarwa', ...h });
+                }
             });
-            summaryText += `Jimillar Siyarwa: ₦${siyarwaRecord.kudi.toLocaleString()}\n\n`;
-            htmlText += `</ul><b>Jimillar Siyarwa:</b> ₦${siyarwaRecord.kudi.toLocaleString()}<br><hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">`;
         }
 
         if (bashiRecord && bashiRecord.history) {
-            summaryText += `[+] SASHEN BASUSSUKA:\n`;
-            htmlText += `<b style="color:var(--danger-color);">📝 Sashen Basussuka:</b><ul style="margin:5px 0 10px 20px; padding:0;">`;
             bashiRecord.history.forEach(h => {
-                summaryText += ` - ${h.kaya} | ₦${h.kudi.toLocaleString()} (${h.lokaci})\n`;
-                htmlText += `<li><b>${h.kaya}</b> - ₦${h.kudi.toLocaleString()} <span style="font-size:11px; color:#636e72;">(${h.lokaci})</span></li>`;
+                let mKey = h.date ? h.date.substring(3) : "";
+                if(selectedMonth === 'all' || mKey === selectedMonth) {
+                    let dBox = h.date || "Kwanan Wata Ba a Sani Ba";
+                    if(!groupedByDate[dBox]) groupedByDate[dBox] = [];
+                    groupedByDate[dBox].push({ type: 'Bashi', ...h });
+                }
             });
-            summaryText += `Jimillar Bashi: ₦${bashiRecord.kudi.toLocaleString()}\n\n`;
-            htmlText += `</ul><b>Jimillar Bashi:</b> ₦${bashiRecord.kudi.toLocaleString()}<br>`;
         }
 
-        summaryText += `═══════════════════════════\n   Nagode da Zabi Na Mu!   \n═══════════════════════════`;
+        let htmlText = `<div style="text-align:center; border-bottom:2px dashed rgba(255,255,255,0.4); padding-bottom:10px; margin-bottom:10px;">
+            <b style="font-size:16px; color:#fdcb6e;">📜 TAKARDAR KASUWANCI (RECEIPT)</b><br>
+            <span style="font-size:14px;">Abokin Ciniki: <b>${customerName}</b></span>
+        </div>`;
+
+        let txtSummary = `====================================\n        TAKARDAR KASUWANCI (9:16)\n====================================\nAbokin Ciniki: ${customerName}\n------------------------------------\n`;
+
+        for (let dateKey in groupedByDate) {
+            htmlText += `<div style="background:rgba(0,0,0,0.2); margin:8px 0; padding:8px; border-radius:6px; border-left:4px solid #00cec9;">
+                <b style="color:#00cec9;">📅 Kwanan Wata: ${dateKey}</b><br>`;
+            txtSummary += `\n[ KWANAN WATA: ${dateKey} ]\n`;
+
+            groupedByDate[dateKey].forEach(item => {
+                htmlText += `<div style="margin-top:4px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+                    ▪️ <b>${item.type}:</b> ${item.kaya} <br>💰 ₦${item.kudi.toLocaleString()} (${item.time})
+                </div>`;
+                txtSummary += `- (${item.type}) ${item.kaya} : ₦${item.kudi.toLocaleString()} [${item.time}]\n`;
+            });
+            htmlText += `</div>`;
+        }
 
         previewBox.innerHTML = htmlText;
         downloadBtn.style.display = "block";
-        window.currentGeneratedSummaryText = summaryText;
+        window.currentGeneratedSummaryText = txtSummary;
     }
 
     function downloadCustomerSummaryFile() {
         if (!window.currentGeneratedSummaryText) return;
         let blob = new Blob([window.currentGeneratedSummaryText], { type: 'text/plain;charset=utf-8' });
         let url = URL.createObjectURL(blob);
-        let a = document.createElement('a'); a.href = url; a.download = `Customer_Summary.txt`;
+        let a = document.createElement('a'); a.href = url; a.download = `Customer_Receipt_9_16.txt`;
         document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
@@ -1224,7 +1301,7 @@
         jerinFayilolinMutane.forEach((item) => {
             let card = document.createElement('div');
             card.className = 'file-card-box';
-            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div> <span style="font-size:12px; color:var(--primary-color); font-weight:bold;">Dubawa ➔</span>`;
+            card.innerHTML = `<div class="file-card-title">📁 ${item.suna}</div> <span style="font-size:12px; color:var(--primary-color); font-weight:bold;">Shiga ➔</span>`;
             card.onclick = () => budeCustomerOptions(item.suna);
             container.appendChild(card);
         });
@@ -1246,33 +1323,27 @@
         document.getElementById('customerFileTitle').innerText = `Tarihi: ${suna} (${type})`;
         let contentHtml = "";
 
-        if (type === 'Siyarwa' || type === 'All') {
-            contentHtml += `<b style="color:var(--success-color);">🛒 Siyar da Kaya:</b>`;
-            if (siyarwaData && siyarwaData.history && siyarwaData.history.length > 0) {
-                contentHtml += `<ul style="margin:5px 0 15px 15px; padding:0;">`;
+        if(type === 'Siyarwa' || type === 'All') {
+            contentHtml += `<h4 style="color:var(--success-color); margin-bottom:5px;">🛒 Siyar da Kaya: ${siyarwaData ? '₦'+siyarwaData.kudi.toLocaleString() : '₦0'}</h4>`;
+            if(siyarwaData && siyarwaData.history) {
                 siyarwaData.history.forEach(h => {
-                    let badge = h.status === 'cleared_debt' ? `<span style="background:#00cec9; color:white; padding:2px 6px; border-radius:4px; font-size:10px;">(Tsohon Bashi da aka biya)</span>` : ``;
-                    contentHtml += `<li style="margin-bottom:6px;"><b>Kaya:</b> ${h.kaya}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()} ${badge}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span></li><hr style="border:0; border-top:1px solid #eee;">`;
+                    contentHtml += `<div style="background:#fff; padding:6px 10px; margin-bottom:5px; border-radius:6px; border:1px solid #dfe6e9;">
+                        <b>Kaya:</b> ${h.kaya}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()}<br><span style="font-size:11px; color:#636e72;">📅 ${h.date} | ⏰ ${h.time}</span>
+                    </div>`;
                 });
-                contentHtml += `</ul><b>Jimillar Kuɗi: ₦${siyarwaData.kudi.toLocaleString()}</b>`;
-            } else {
-                contentHtml += `<p style="color:#636e72; font-style:italic;">Babu bayanin siyarwa.</p>`;
-            }
+            } else { contentHtml += `<p style="font-size:12px; color:#636e72;">Babu bayanan siyarwa.</p>`; }
         }
 
-        if (type === 'Bashi' || type === 'All') {
-            if(type === 'All') contentHtml += `<hr style="margin:15px 0; border-top:2px solid #ddd;">`;
-            contentHtml += `<b style="color:var(--danger-color);">📝 Basussuka:</b>`;
-            if (bashiData && bashiData.history && bashiData.history.length > 0) {
-                contentHtml += `<ul style="margin:5px 0 15px 15px; padding:0;">`;
-                bashiData.history.forEach((h, index) => {
-                    let payBtn = h.status !== 'paid_from_debt' ? `<br><button onclick="markDebtAsPaid('${suna}', ${index})" style="background:var(--success-color); color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px; margin-top:4px;">✔ Mark as Paid (Biya)</button>` : `<br><span style="color:var(--success-color); font-weight:bold; font-size:11px;">✔ An riga an biya</span>`;
-                    contentHtml += `<li style="margin-bottom:8px;"><b>Bayani:</b> ${h.kaya}<br><b>Bashi:</b> ₦${h.kudi.toLocaleString()}<br><span style="color:#636e72; font-size:11px;">📅 ${h.lokaci}</span>${payBtn}</li><hr style="border:0; border-top:1px solid #eee;">`;
+        if(type === 'Bashi' || type === 'All') {
+            contentHtml += `<h4 style="color:var(--danger-color); margin-top:15px; margin-bottom:5px;">📝 Basussuka: ${bashiData ? '₦'+bashiData.kudi.toLocaleString() : '₦0'}</h4>`;
+            if(bashiData && bashiData.history) {
+                bashiData.history.forEach((h, idx) => {
+                    contentHtml += `<div style="background:#fff; padding:6px 10px; margin-bottom:5px; border-radius:6px; border:1px solid #dfe6e9;">
+                        <b>Kaya/Dalili:</b> ${h.kaya}<br><b>Kuɗi:</b> ₦${h.kudi.toLocaleString()}<br><span style="font-size:11px; color:#636e72;">📅 ${h.date} | ⏰ ${h.time}</span><br>
+                        <button onclick="markBashiAsPaid('${suna}', ${idx})" style="background:var(--success-color); color:white; border:none; padding:4px 8px; font-size:11px; border-radius:4px; cursor:pointer; margin-top:5px; font-weight:bold;">✅ Biya (Canza zuwa Siyarwa)</button>
+                    </div>`;
                 });
-                contentHtml += `</ul><b>Jimillar Bashi: ₦${bashiData.kudi.toLocaleString()}</b>`;
-            } else {
-                contentHtml += `<p style="color:#636e72; font-style:italic;">Babu basussuka a yanzu.</p>`;
-            }
+            } else { contentHtml += `<p style="font-size:12px; color:#636e72;">Babu basussuka.</p>`; }
         }
 
         document.getElementById('customerFileContent').innerHTML = contentHtml;
