@@ -1174,11 +1174,11 @@
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
 
-        // Helper to check date filters accurately
+        // Helper function to strictly match selected date filter
         function checkDateFilter(itemDateStr, rawDateStr) {
-            if (filterOption === "") return true;
+            if (filterOption === "") return true; // Duk lokaci
             let itemDate = rawDateStr ? new Date(rawDateStr) : (itemDateStr ? new Date(itemDateStr) : null);
-            if (!itemDate || isNaN(itemDate)) return true;
+            if (!itemDate || isNaN(itemDate)) return false;
 
             let now = new Date();
 
@@ -1189,16 +1189,18 @@
                 yest.setDate(now.getDate() - 1);
                 return itemDate.toDateString() === yest.toDateString();
             } else if (filterOption === "this_week") {
-                let firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                let firstDayOfWeek = new Date(now);
+                firstDayOfWeek.setDate(now.getDate() - now.getDay());
+                firstDayOfWeek.setHours(0, 0, 0, 0);
                 return itemDate >= firstDayOfWeek;
             } else {
-                // Month filter (e.g., '01', '02' based on string or getMonth)
+                // Month filter (e.g., '01', '02', etc.)
                 let itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0');
                 return itemMonth === filterOption;
             }
         }
 
-        // GENERAL SUMMARY MODE (Idan babu suna aka rubuta)
+        // 1. GENERAL SUMMARY MODE (Idan babu suna aka rubuta)
         if (keyword === "") {
             let allSiyarwaItems = [];
             jerinSiyarwa.forEach(s => {
@@ -1271,7 +1273,7 @@
             return;
         }
 
-        // INDIVIDUAL SUMMARY MODE (Idan aka zabi suna)
+        // 2. INDIVIDUAL SUMMARY MODE (Idan aka zabi suna)
         let bashiRecord = jerinBasussuka.find(b => b.suna.toLowerCase().includes(keyword));
         let siyarwaRecord = jerinSiyarwa.find(s => s.maiSaya.toLowerCase().includes(keyword));
 
@@ -1286,6 +1288,7 @@
         let siyarwaItems = siyarwaRecord && siyarwaRecord.history ? [...siyarwaRecord.history] : [];
         let bashiItems = bashiRecord && bashiRecord.history ? [...bashiRecord.history] : [];
 
+        // Apply strict date filtering
         siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
         bashiItems = bashiItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
 
@@ -1296,7 +1299,7 @@
             <div>
                 <div class="card-header-title">Tarihin Kasuwanci</div>
                 <div class="card-customer-name">${customerName}</div>
-                <div class="card-date-box">📅 Yau: ${new Date().toLocaleDateString()}</div>
+                <div class="card-date-box">📅 Zaɓi: ${filterOption ? filterOption.toUpperCase() : 'Duk Lokaci'}</div>
             </div>
             <div style="text-align: left; max-height: 380px; overflow-y: auto; padding-right: 5px;">
                 
