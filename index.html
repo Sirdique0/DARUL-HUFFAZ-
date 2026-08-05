@@ -1174,12 +1174,11 @@
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
 
-        // Helper to strictly check date filters
-        function checkDateFilter(rawDateStr) {
+        // Helper to check date filters
+        function checkDateFilter(itemDateStr, rawDateStr) {
             if (filterOption === "") return true;
-            if (!rawDateStr) return false;
-            let itemDate = new Date(rawDateStr);
-            if (isNaN(itemDate)) return false;
+            let itemDate = rawDateStr ? new Date(rawDateStr) : (itemDateStr ? new Date(itemDateStr) : null);
+            if (!itemDate || isNaN(itemDate)) return true;
 
             let now = new Date();
 
@@ -1190,16 +1189,12 @@
                 yest.setDate(now.getDate() - 1);
                 return itemDate.toDateString() === yest.toDateString();
             } else if (filterOption === "this_week") {
-                let firstDayOfWeek = new Date(now);
-                firstDayOfWeek.setDate(now.getDate() - now.getDay());
-                firstDayOfWeek.setHours(0,0,0,0);
+                let firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
                 return itemDate >= firstDayOfWeek;
             } else {
-                // Month filter (e.g., '01', '02', etc.)
-                let itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0');
-                let itemYear = itemDate.getFullYear();
-                let currentYear = now.getFullYear();
-                return itemMonth === filterOption && itemYear === currentYear;
+                // Month filter (e.g., '01', '02')
+                let parts = itemDateStr ? itemDateStr.split('/') : [];
+                return parts.length >= 2 && parts[0].padStart(2, '0') === filterOption;
             }
         }
 
@@ -1209,7 +1204,7 @@
             jerinSiyarwa.forEach(s => {
                 if (s.history) {
                     s.history.forEach(h => {
-                        if (checkDateFilter(h.rawDate)) {
+                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
                             allSiyarwaItems.push({ customer: s.maiSaya, ...h });
                         }
                     });
@@ -1220,13 +1215,14 @@
             jerinBasussuka.forEach(b => {
                 if (b.history) {
                     b.history.forEach(h => {
-                        if (checkDateFilter(h.rawDate)) {
+                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
                             allBashiItems.push({ customer: b.suna, ...h });
                         }
                     });
                 }
             });
 
+            // Lissaafin Total din da aka zaɓa kaɗai
             let totalGenSiyarwa = allSiyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
             let totalGenBashi = allBashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
 
@@ -1291,9 +1287,10 @@
         let siyarwaItems = siyarwaRecord && siyarwaRecord.history ? [...siyarwaRecord.history] : [];
         let bashiItems = bashiRecord && bashiRecord.history ? [...bashiRecord.history] : [];
 
-        siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.rawDate));
-        bashiItems = bashiItems.filter(item => checkDateFilter(item.rawDate));
+        siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
+        bashiItems = bashiItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
 
+        // Lissaafin Total din da aka zaɓa kaɗai ga mutum daya
         let totalSiyarwaAmount = siyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
         let totalBashiAmount = bashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
 
