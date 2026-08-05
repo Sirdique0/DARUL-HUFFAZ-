@@ -1174,13 +1174,12 @@
         let previewBox = document.getElementById('summaryPreviewBox');
         let downloadBtn = document.getElementById('downloadSummaryBtn');
 
-        let todayStr = new Date().toDateString();
-        
-        // Helper to check date filters
-        function checkDateFilter(itemDateStr, rawDateStr) {
+        // Helper to strictly check date filters
+        function checkDateFilter(rawDateStr) {
             if (filterOption === "") return true;
-            let itemDate = rawDateStr ? new Date(rawDateStr) : (itemDateStr ? new Date(itemDateStr) : null);
-            if (!itemDate || isNaN(itemDate)) return true;
+            if (!rawDateStr) return false;
+            let itemDate = new Date(rawDateStr);
+            if (isNaN(itemDate)) return false;
 
             let now = new Date();
 
@@ -1191,12 +1190,16 @@
                 yest.setDate(now.getDate() - 1);
                 return itemDate.toDateString() === yest.toDateString();
             } else if (filterOption === "this_week") {
-                let firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                let firstDayOfWeek = new Date(now);
+                firstDayOfWeek.setDate(now.getDate() - now.getDay());
+                firstDayOfWeek.setHours(0,0,0,0);
                 return itemDate >= firstDayOfWeek;
             } else {
-                // Month filter (e.g., '01', '02')
-                let parts = itemDateStr ? itemDateStr.split('/') : [];
-                return parts.length >= 2 && parts[0].padStart(2, '0') === filterOption;
+                // Month filter (e.g., '01', '02', etc.)
+                let itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0');
+                let itemYear = itemDate.getFullYear();
+                let currentYear = now.getFullYear();
+                return itemMonth === filterOption && itemYear === currentYear;
             }
         }
 
@@ -1206,7 +1209,7 @@
             jerinSiyarwa.forEach(s => {
                 if (s.history) {
                     s.history.forEach(h => {
-                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
+                        if (checkDateFilter(h.rawDate)) {
                             allSiyarwaItems.push({ customer: s.maiSaya, ...h });
                         }
                     });
@@ -1217,7 +1220,7 @@
             jerinBasussuka.forEach(b => {
                 if (b.history) {
                     b.history.forEach(h => {
-                        if (checkDateFilter(h.dateOnly, h.rawDate)) {
+                        if (checkDateFilter(h.rawDate)) {
                             allBashiItems.push({ customer: b.suna, ...h });
                         }
                     });
@@ -1288,8 +1291,8 @@
         let siyarwaItems = siyarwaRecord && siyarwaRecord.history ? [...siyarwaRecord.history] : [];
         let bashiItems = bashiRecord && bashiRecord.history ? [...bashiRecord.history] : [];
 
-        siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
-        bashiItems = bashiItems.filter(item => checkDateFilter(item.dateOnly, item.rawDate));
+        siyarwaItems = siyarwaItems.filter(item => checkDateFilter(item.rawDate));
+        bashiItems = bashiItems.filter(item => checkDateFilter(item.rawDate));
 
         let totalSiyarwaAmount = siyarwaItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
         let totalBashiAmount = bashiItems.reduce((acc, curr) => acc + (curr.kudi || 0), 0);
